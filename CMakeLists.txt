@@ -49,6 +49,10 @@ set(includes ${SOURCE_DIR}/Camera/Camera.h
 
 add_executable(engine ${sources} ${includes})
 
+set_target_properties(engine PROPERTIES 
+                      XCODE_GENERATE_SCHEME TRUE
+                      XCODE_SCHEME_WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+
 add_custom_target(copy_resources ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/resources
