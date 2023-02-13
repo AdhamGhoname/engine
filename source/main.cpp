@@ -210,7 +210,7 @@ void init()
 
 	unsigned int VBO[2];
 	glGenBuffers(2, VBO);
-	phongLightShader = Shader(join_paths(WORKING_DIRECTORY, "/shaders/phong.vert").c_str(), join_paths(WORKING_DIRECTORY, "/shaders/phong.frag").c_str());
+	phongLightShader = Shader("resources/shaders/phong.vert", "resources/shaders/phong.frag");
 
 	// Phong shaded objects
 
@@ -227,7 +227,7 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
-	unsigned char* data = stbi_load(join_paths(WORKING_DIRECTORY, "/textures/container.jpg").c_str(), &width, &height, &channels, 0);
+	unsigned char* data = stbi_load(("resources/textures/container.jpg"), &width, &height, &channels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
@@ -246,7 +246,7 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	data = stbi_load(join_paths(WORKING_DIRECTORY, "/textures/awesomeface.png").c_str(), &width, &height, &channels, 0);
+	data = stbi_load(("resources/textures/awesomeface.png"), &width, &height, &channels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
@@ -269,7 +269,7 @@ void init()
 	glEnableVertexAttribArray(2);
 
 	// light source
-	lightSourceShader = Shader(join_paths(WORKING_DIRECTORY, "/shaders/lightSource.vert").c_str(), join_paths(WORKING_DIRECTORY, "/shaders/lightSource.frag").c_str());
+	lightSourceShader = Shader(("resources/shaders/lightSource.vert"), ("resources/shaders/lightSource.frag"));
 
 	glBindVertexArray(VAO[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
