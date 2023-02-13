@@ -17,6 +17,11 @@ using namespace std;
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define WORKING_DIRECTORY "/Users/adhamghoname/Work/engine"
+
+string join_paths(string a, string b) {
+    return a + b;
+}
 
 float cubeVerts[] = {
 	// positions // normals // texture coords
@@ -206,7 +211,7 @@ void init()
 
 	unsigned int VBO[2];
 	glGenBuffers(2, VBO);
-	phongLightShader = Shader("../shaders/phong.vert", "../shaders/phong.frag");
+	phongLightShader = Shader(join_paths(WORKING_DIRECTORY, "/shaders/phong.vert").c_str(), join_paths(WORKING_DIRECTORY, "/shaders/phong.frag").c_str());
 
 	// Phong shaded objects
 
@@ -223,7 +228,7 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
-	unsigned char* data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
+	unsigned char* data = stbi_load(join_paths(WORKING_DIRECTORY, "/textures/container.jpg").c_str(), &width, &height, &channels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
@@ -242,7 +247,7 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	data = stbi_load("../textures/awesomeface.png", &width, &height, &channels, 0);
+	data = stbi_load(join_paths(WORKING_DIRECTORY, "/textures/awesomeface.png").c_str(), &width, &height, &channels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
