@@ -1,15 +1,28 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-	glm::vec3 forward = glm::vec3(0.0f, 0.0f, 1.0f),
-	std::string projection = "persp",
-	float near = 0.1f,
-	float far = 1000.0f,
-	float fov = 60.0f,
-	float aspect_ratio = 16.0f / 9.0f,
-	float mouseSensitivity = 0.1f,
-	glm::vec3 eulerAngleLowerbound = -glm::vec3(glm::half_pi<float>(), glm::half_pi<float>(), 0.0f),
-	glm::vec3 eulerAngleUpperbound = glm::vec3(glm::half_pi<float>(), glm::half_pi<float>(), 0.0f))
+Camera::Camera() {
+    position = glm::vec3(0.0f, 0.0f, 0.0f);
+    forward = glm::vec3(0.0f, 0.0f, 1.0f);
+    projection = "persp";
+    near = 0.1f;
+    far = 1000.0f;
+    fov = 60.0f;
+    aspect_ratio = 16.0f / 9.0f;
+    mouseSensitivity = 0.1f;
+    eulerAngleLowerbound = -glm::vec3(glm::half_pi<float>(), glm::half_pi<float>(), 0.0f);
+    eulerAngleUpperbound = glm::vec3(glm::half_pi<float>(), glm::half_pi<float>(), 0.0f);
+}
+
+Camera::Camera(glm::vec3 position,
+            glm::vec3 forward,
+            std::string projection,
+            float near,
+            float far,
+            float fov,
+            float aspect_ratio,
+            float mouseSensitivity,
+            glm::vec3 eulerAngleLowerbound,
+            glm::vec3 eulerAngleUpperbound)
 {
 	this->position = position;
 	this->forward = glm::normalize(forward);

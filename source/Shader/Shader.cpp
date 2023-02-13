@@ -6,7 +6,7 @@ using namespace std;
 bool Shader::readFile(const char* filepath, string& output)
 {
 	ifstream fs(filepath);
-	fs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	//fs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try
 	{
 		stringstream buffer;

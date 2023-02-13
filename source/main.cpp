@@ -206,7 +206,7 @@ void init()
 
 	unsigned int VBO[2];
 	glGenBuffers(2, VBO);
-	phongLightShader = Shader("D:\\Work\\LearnOpenGL\\LearnOpenGL\\phong.vert", "D:\\Work\\LearnOpenGL\\LearnOpenGL\\phong.frag");
+	phongLightShader = Shader("../shaders/phong.vert", "../shaders/phong.frag");
 
 	// Phong shaded objects
 
@@ -270,7 +270,7 @@ void init()
 	{
 		cout << sphereVerts[100+i] << endl;
 	}
-	lightSourceShader = Shader("D:\\Work\\LearnOpenGL\\LearnOpenGL\\lightSource.vert", "D:\\Work\\LearnOpenGL\\LearnOpenGL\\lightSource.frag");
+	lightSourceShader = Shader("../shaders/lightSource.vert", "../shaders/lightSource.frag");
 
 	glBindVertexArray(VAO[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
@@ -342,6 +342,9 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (!window)
 	{
@@ -349,6 +352,7 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+    
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -362,6 +366,7 @@ int main()
 
 
 	init();
+    cout << "here" << endl;
 
 	int VertAttrCount;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &VertAttrCount);

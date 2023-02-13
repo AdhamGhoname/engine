@@ -30,6 +30,7 @@ private:
 	bool moved;
 
 public:
+    Camera();
 	Camera(glm::vec3 position,
 		glm::vec3 forward,
 		std::string projection,
