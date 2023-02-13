@@ -17,7 +17,6 @@ using namespace std;
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-#define WORKING_DIRECTORY "/Users/adhamghoname/Work/engine"
 
 string join_paths(string a, string b) {
     return a + b;
@@ -270,12 +269,7 @@ void init()
 	glEnableVertexAttribArray(2);
 
 	// light source
-	generate_sphere_mesh(1.5f, 20, 20, &sphereVerts);
-	for (int i = 0; i < 10; i++)
-	{
-		cout << sphereVerts[100+i] << endl;
-	}
-	lightSourceShader = Shader("../shaders/lightSource.vert", "../shaders/lightSource.frag");
+	lightSourceShader = Shader(join_paths(WORKING_DIRECTORY, "/shaders/lightSource.vert").c_str(), join_paths(WORKING_DIRECTORY, "/shaders/lightSource.frag").c_str());
 
 	glBindVertexArray(VAO[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
@@ -371,7 +365,6 @@ int main()
 
 
 	init();
-    cout << "here" << endl;
 
 	int VertAttrCount;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &VertAttrCount);

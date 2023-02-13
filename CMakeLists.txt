@@ -38,6 +38,8 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+add_compile_definitions(WORKING_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
+
 set(sources ${SOURCE_DIR}/main.cpp
             ${SOURCE_DIR}/Shader/Shader.cpp
             ${SOURCE_DIR}/Camera/Camera.cpp)
