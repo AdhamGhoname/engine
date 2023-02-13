@@ -51,8 +51,8 @@ add_executable(engine ${sources} ${includes})
 
 add_custom_target(copy_resources ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources
-        ${CMAKE_BINARY_DIR}/resources
+        ${PROJECT_SOURCE_DIR}/resources
+        ${PROJECT_BINARY_DIR}/resources
         COMMENT "Copying resources into binary directory")
 
 add_dependencies(engine copy_resources)
