@@ -304,7 +304,7 @@ void render()
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(2.0f, -0.5f, 1.0f));
-	model = glm::rotate(model, glm::radians(20.0f) * 1, glm::vec3(1.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, glm::radians(20.0f) * 1, glm::vec3(1.0f, 1.0f, 0.0f));
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 proj = camera.GetProjectionMatrix();
 
@@ -312,26 +312,36 @@ void render()
 	phongLightShader.setUniform("View", view);
 	phongLightShader.setUniform("Projection", proj);
 	phongLightShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
-	phongLightShader.setUniform("lightColor", glm::vec3(1.0f));
+	phongLightShader.setUniform("lightColor", glm::vec3(1.0f, 0.3f, 0.1f));
 	phongLightShader.setUniform("cameraPosition", camera.GetPosition());
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+    phongLightShader.setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    phongLightShader.setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    phongLightShader.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    phongLightShader.setUniform("material.shininess", 32.0f);
+    
+    glm::vec3 lightPosition(0.0f, 0.0f, 0.0f);
+    model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(30.0f) * 1, glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(10.0f, 0, 0));
+    glm::vec3 lightPositionWorldSpace = glm::vec3(model * glm::vec4(lightPosition, 1.0f));
+    phongLightShader.setUniform("lightPosition", lightPositionWorldSpace);
+    //cout << lightPositionWorldSpace.x << " " << lightPositionWorldSpace.y << " " << lightPositionWorldSpace.z << endl;
+    
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
-	glBindVertexArray(VAO[1]);
+    glBindVertexArray(VAO[1]);
 
-	lightSourceShader.use();
-	glm::vec3 lightPosition(0.0f, 0.0f, 0.0f);
-	phongLightShader.setUniform("lightPosition", lightPosition);
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0, 0, 0));
-	view = camera.GetViewMatrix();
-	proj = camera.GetProjectionMatrix();
+    lightSourceShader.use();
+    
+    view = camera.GetViewMatrix();
+    proj = camera.GetProjectionMatrix();
 
-	lightSourceShader.setUniform("Model", model);
-	lightSourceShader.setUniform("View", view);
-	lightSourceShader.setUniform("Projection", proj);
-	lightSourceShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
+    lightSourceShader.setUniform("Model", model);
+    lightSourceShader.setUniform("View", view);
+    lightSourceShader.setUniform("Projection", proj);
+    lightSourceShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
 	glPointSize(10);
-	glDrawArrays(GL_POINTS, 0, 120);
+	glDrawArrays(GL_POINTS, 0, 1);
 }
 
 

@@ -5,6 +5,15 @@ in vec2 texCoord;
 in vec3 normal;
 in vec3 vertPosition;
 
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+uniform Material material;
+
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
 uniform vec3 lightColor;
@@ -13,21 +22,23 @@ uniform vec3 cameraPosition;
 
 void main()
 {
-	vec4 baseColor = mix(texture(sampler1, texCoord),
-					texture(sampler2, texCoord),
-					0.5f) * vec4(lightColor, 1.0f);
-
-	float ambientIntensity = 0.1f;
-
+    vec3 ambient = 0.1f * lightColor * material.ambient;
+    
 	vec3 lightDirection = normalize(lightPosition - vertPosition);
 
-	float diffuseIntensity = max(0.0f, dot(lightDirection, normal));
+	float diffuseIntensity = 0.5 * max(0.0f, dot(lightDirection, normal));
+    
+    vec3 diffuse = diffuseIntensity * material.diffuse;
 
-	vec3 reflectedLightDirection = reflect(lightDirection, normal);
+	vec3 reflectedLightDirection = reflect(-lightDirection, normal);
 
-	float specular = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
-	specular = max(0.0f, specular);
-	specular = pow(specular, 32.0f);
-
-	FragColor = (ambientIntensity + diffuseIntensity + specular) * baseColor;
+	float specularIntensity = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
+    specularIntensity = max(0.0f, specularIntensity);
+    specularIntensity = pow(specularIntensity, material.shininess);
+    
+    vec3 specular = specularIntensity * material.specular;
+    
+    
+    
+	FragColor = vec4(ambient + diffuse + specular, 1.0);
 }
