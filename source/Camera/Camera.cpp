@@ -130,4 +130,8 @@ void Camera::OnMouseScroll(GLFWwindow* window, double xoffset, double yoffset)
 {
 	float new_fov = this-> fov - yoffset * this->mouseSensitivity;
 	this->fov = glm::max(glm::min(120.0f, new_fov), 1.0f);
-} 
+}
+
+glm::vec3 Camera::GetPosition() {
+	return this->position;
+}

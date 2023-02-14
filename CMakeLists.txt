@@ -11,6 +11,7 @@ project(Engine CXX)
 set(ENABLE_ASSIMP   OFF CACHE BOOL "Add Open Asset Import Library (assimp) to the project" FORCE)
 set(ENABLE_STB   ON CACHE BOOL "Add STB Image to the project" FORCE)
 set(ENABLE_GLM   ON CACHE BOOL "Add GLM to the project" FORCE)
+set(KEEP_FOLDER_STRUCTURE ON CACHE BOOL "Keep the folder structure of the source folder as is in the build project" FORCE)
 
 #===========================================================================================
 # GLAD CONFIGURATION
@@ -40,14 +41,19 @@ set(CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 add_compile_definitions(WORKING_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(sources ${SOURCE_DIR}/main.cpp
-            ${SOURCE_DIR}/Shader/Shader.cpp
-            ${SOURCE_DIR}/Camera/Camera.cpp)
+file(GLOB_RECURSE SOURCES_AND_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/source/*.h
+                                        ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
 
-set(includes ${SOURCE_DIR}/Camera/Camera.h
-             ${SOURCE_DIR}/Shader/Shader.h)
+file(GLOB_RECURSE SHADERS ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.frag
+                          ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.vert)
 
-add_executable(engine ${sources} ${includes})
+add_executable(engine ${SOURCES_AND_INCLUDES} ${SHADERS})
+
+if (KEEP_FOLDER_STRUCTURE)
+    include(${CMAKE_DIR}/GroupSources.cmake)
+    GroupSourcesByFolder(engine)
+endif()
+
 
 set_target_properties(engine PROPERTIES 
                       XCODE_GENERATE_SCHEME TRUE

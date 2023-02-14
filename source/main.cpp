@@ -304,7 +304,7 @@ void render()
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(2.0f, -0.5f, 1.0f));
-	model = glm::rotate(model, glm::radians(20.0f) * (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(20.0f) * 1, glm::vec3(1.0f, 1.0f, 0.0f));
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 proj = camera.GetProjectionMatrix();
 
@@ -313,6 +313,7 @@ void render()
 	phongLightShader.setUniform("Projection", proj);
 	phongLightShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
 	phongLightShader.setUniform("lightColor", glm::vec3(1.0f));
+	phongLightShader.setUniform("cameraPosition", camera.GetPosition());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glBindVertexArray(VAO[1]);
@@ -344,7 +345,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Engine", NULL, NULL);
 	if (!window)
 	{
 		cout << "Failed to create GLFW window\n";

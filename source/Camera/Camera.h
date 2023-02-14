@@ -53,6 +53,7 @@ public:
 	void OnMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 	void Translate(glm::vec3 offset);
 	void TranslateRelative(glm::vec3 offset);
+	glm::vec3 GetPosition();
 	glm::mat4 GetViewMatrix();
 	glm::mat4 GetProjectionMatrix();
 };

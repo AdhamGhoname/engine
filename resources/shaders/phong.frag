@@ -9,16 +9,25 @@ uniform sampler2D sampler1;
 uniform sampler2D sampler2;
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
+uniform vec3 cameraPosition;
 
 void main()
 {
 	vec4 baseColor = mix(texture(sampler1, texCoord),
 					texture(sampler2, texCoord),
 					0.5f) * vec4(lightColor, 1.0f);
+
 	float ambientIntensity = 0.1f;
+
 	vec3 lightDirection = normalize(lightPosition - vertPosition);
+
 	float diffuseIntensity = max(0.0f, dot(lightDirection, normal));
+
 	vec3 reflectedLightDirection = reflect(lightDirection, normal);
-	float specular = pow(dot(normalize(-vertPosition), normal), 32.0f);
+
+	float specular = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
+	specular = max(0.0f, specular);
+	specular = pow(specular, 32.0f);
+
 	FragColor = (ambientIntensity + diffuseIntensity + specular) * baseColor;
 }
