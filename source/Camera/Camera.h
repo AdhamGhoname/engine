@@ -46,6 +46,7 @@ public:
 	void SetEulerAngles(glm::vec3 eulerAngles);
 	void SetPitch(float pitch);
 	void SetYaw(float pitch);
+	void SetAspectRatio(float ratio);
 	void OffsetEulerAngles(glm::vec3 offset);
 	void OffsetPitch(float offset);
 	void OffsetYaw(float offset);

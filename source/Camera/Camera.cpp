@@ -64,6 +64,9 @@ void Camera::LookAt(glm::vec3 target)
 	this->forward = glm::normalize(target - this->position);
 }
 
+void Camera::SetAspectRatio(float ratio) {
+	this->aspect_ratio = ratio;
+}
 void Camera::SetEulerAngles(glm::vec3 eulerAngles)
 {
 	//eulerAngles = glm::min(this->eulerAngleUpperbound, eulerAngles);
