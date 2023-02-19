@@ -112,8 +112,16 @@ void Shader::setUniform(const string& name, glm::mat3 value) const
 	glUniformMatrix3fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
+void Shader::setUniform(const string& name, glm::vec2 value) const
+{
+	glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
+}
 
 void Shader::setUniform(const string& name, glm::vec3 value) const
 {
-	glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
+    glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
+}
+void Shader::setUniform(const string& name, glm::vec4 value) const
+{
+    glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
 }

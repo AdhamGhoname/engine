@@ -55,6 +55,7 @@ public:
 	void Translate(glm::vec3 offset);
 	void TranslateRelative(glm::vec3 offset);
 	glm::vec3 GetPosition();
+    glm::vec3 GetForward();
 	glm::mat4 GetViewMatrix();
 	glm::mat4 GetProjectionMatrix();
 };

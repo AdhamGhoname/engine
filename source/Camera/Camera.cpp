@@ -138,3 +138,7 @@ void Camera::OnMouseScroll(GLFWwindow* window, double xoffset, double yoffset)
 glm::vec3 Camera::GetPosition() {
 	return this->position;
 }
+
+glm::vec3 Camera::GetForward() {
+    return this->forward;
+}

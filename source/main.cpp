@@ -254,16 +254,29 @@ void render()
 	glm::mat4 proj = camera.GetProjectionMatrix();
 	phongLightShader.setUniform("View", view);
 	phongLightShader.setUniform("Projection", proj);
-
-	phongLightShader.setUniform("lightColor", glm::vec3(1.0f, 0.3f, 0.1f));
+    glm::vec3 lightPosition = camera.GetPosition();
+    glm::vec3 lightDirection = -camera.GetForward();
 	phongLightShader.setUniform("cameraPosition", camera.GetPosition());
     phongLightShader.setUniform("material.diffuse", 0);
     phongLightShader.setUniform("material.specular", 1);
     phongLightShader.setUniform("material.shininess", 32.0f);
-	phongLightShader.setUniform("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-	phongLightShader.setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	phongLightShader.setUniform("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
-	phongLightShader.setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    
+    phongLightShader.setUniform("dirLightCount", 1);
+    phongLightShader.setUniform("spotLightCount", 1);
+    
+    phongLightShader.setUniform("directionalLights[0].direction", glm::vec3(-0.2f, 1.0f, -0.5f));
+    phongLightShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.4f));
+    phongLightShader.setUniform("directionalLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
+    phongLightShader.setUniform("directionalLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    
+    
+    phongLightShader.setUniform("spotLights[0].position", lightPosition);
+    phongLightShader.setUniform("spotLights[0].direction", lightDirection);
+    phongLightShader.setUniform("spotLights[0].attenuation", glm::vec3(1.0f, 0.09f, 0.32f));
+    phongLightShader.setUniform("spotLights[0].bounds", glm::cos(glm::vec2(glm::radians(17.5f), glm::radians(22.5f))));
+    phongLightShader.setUniform("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    phongLightShader.setUniform("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
+    phongLightShader.setUniform("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 0.8f));
 
 	for (int i = 0; i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
 		glm::mat4 model = glm::mat4(1.0f);
@@ -275,19 +288,20 @@ void render()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 		
-    //phongLightShader.setUniform("light.position", lightPositionWorldSpace);
 
-    //cout << lightPositionWorldSpace.x << " " << lightPositionWorldSpace.y << " " << lightPositionWorldSpace.z << endl;
- //   
- //   glBindVertexArray(VAO[1]);
+    
+    glBindVertexArray(VAO[1]);
+    glm::mat4 model = glm::mat4(1.0);
+    model = glm::translate(model, lightPosition);
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 
- //   lightSourceShader.use();
- //   lightSourceShader.setUniform("Model", model);
- //   lightSourceShader.setUniform("View", view);
- //   lightSourceShader.setUniform("Projection", proj);
- //   lightSourceShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
-	//glPointSize(10);
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
+    lightSourceShader.use();
+    lightSourceShader.setUniform("Model", model);
+    lightSourceShader.setUniform("View", view);
+    lightSourceShader.setUniform("Projection", proj);
+    lightSourceShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
+	glPointSize(10);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 
