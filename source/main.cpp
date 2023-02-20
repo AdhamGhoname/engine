@@ -18,7 +18,7 @@ using namespace std;
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
-string join_paths(string a, string b) {
+string join(string a, string b) {
     return a + b;
 }
 
@@ -79,7 +79,7 @@ float* sphereVerts;
 
 unsigned int VAO[2];
 Shader lightSourceShader = Shader();
-Shader phongLightShader = Shader();
+Shader standardShader = Shader();
 unsigned int textureID[2];
 
 float lastTime;
@@ -114,7 +114,6 @@ unsigned int indices[] =
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//cout << "Resizing to: " << width << " x " << height << "\n";
 	glViewport(0, 0, width, height);
 	camera.SetAspectRatio((float)width / height);
 }
@@ -157,7 +156,7 @@ void init()
 
 	unsigned int VBO[2];
 	glGenBuffers(2, VBO);
-	phongLightShader = Shader("resources/shaders/phong.vert", "resources/shaders/phong.frag");
+	standardShader = Shader("resources/shaders/standard.vert", "resources/shaders/standard.frag");
 
 	// Phong shaded objects
 
@@ -168,10 +167,10 @@ void init()
 	glGenTextures(2, textureID);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID[0]);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, channels;
 	unsigned char* data = stbi_load(("resources/textures/container2.png"), &width, &height, &channels, 0);
@@ -241,9 +240,9 @@ void render()
 
 	glBindVertexArray(VAO[0]);
 
-	phongLightShader.use();
-	phongLightShader.setUniform("sampler1", 0);
-	phongLightShader.setUniform("sampler2", 1);
+	standardShader.use();
+	standardShader.setUniform("sampler1", 0);
+	standardShader.setUniform("sampler2", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID[0]);
@@ -252,39 +251,39 @@ void render()
 
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 proj = camera.GetProjectionMatrix();
-	phongLightShader.setUniform("View", view);
-	phongLightShader.setUniform("Projection", proj);
+	standardShader.setUniform("View", view);
+	standardShader.setUniform("Projection", proj);
     glm::vec3 lightPosition = camera.GetPosition();
     glm::vec3 lightDirection = -camera.GetForward();
-	phongLightShader.setUniform("cameraPosition", camera.GetPosition());
-    phongLightShader.setUniform("material.diffuse", 0);
-    phongLightShader.setUniform("material.specular", 1);
-    phongLightShader.setUniform("material.shininess", 32.0f);
+	standardShader.setUniform("cameraPosition", camera.GetPosition());
+    standardShader.setUniform("material.diffuse[0]", 0);
+    standardShader.setUniform("material.specular[0]", 1);
+    standardShader.setUniform("material.shininess", 32.0f);
     
-    phongLightShader.setUniform("dirLightCount", 1);
-    phongLightShader.setUniform("spotLightCount", 1);
+    standardShader.setUniform("dirLightCount", 1);
+    standardShader.setUniform("spotLightCount", 1);
     
-    phongLightShader.setUniform("directionalLights[0].direction", glm::vec3(-0.2f, 1.0f, -0.5f));
-    phongLightShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.4f));
-    phongLightShader.setUniform("directionalLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
-    phongLightShader.setUniform("directionalLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    standardShader.setUniform("directionalLights[0].direction", glm::vec3(-0.2f, 1.0f, -0.5f));
+    standardShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.4f));
+    standardShader.setUniform("directionalLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
+    standardShader.setUniform("directionalLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
     
     
-    phongLightShader.setUniform("spotLights[0].position", lightPosition);
-    phongLightShader.setUniform("spotLights[0].direction", lightDirection);
-    phongLightShader.setUniform("spotLights[0].attenuation", glm::vec3(1.0f, 0.09f, 0.32f));
-    phongLightShader.setUniform("spotLights[0].bounds", glm::cos(glm::vec2(glm::radians(17.5f), glm::radians(22.5f))));
-    phongLightShader.setUniform("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    phongLightShader.setUniform("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
-    phongLightShader.setUniform("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 0.8f));
+    standardShader.setUniform("spotLights[0].position", lightPosition);
+    standardShader.setUniform("spotLights[0].direction", lightDirection);
+    standardShader.setUniform("spotLights[0].attenuation", glm::vec3(1.0f, 0.09f, 0.32f));
+    standardShader.setUniform("spotLights[0].bounds", glm::cos(glm::vec2(glm::radians(17.5f), glm::radians(22.5f))));
+    standardShader.setUniform("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    standardShader.setUniform("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
+    standardShader.setUniform("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 0.8f));
 
 	for (int i = 0; i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[i]);
 		model = glm::rotate(model, glm::radians(20.0f) * i, glm::vec3(0.5f, 0.3f, 0.0f));
 
-		phongLightShader.setUniform("Model", model);
-		phongLightShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
+		standardShader.setUniform("Model", model);
+		standardShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 		

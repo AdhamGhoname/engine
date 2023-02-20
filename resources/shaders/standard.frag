@@ -1,13 +1,16 @@
 #version 330 core
+#define MAX_LIGHT_COUNT 32
+#define MAX_TEXTURES_COUNT 8
+
 out vec4 FragColor;
 
-in vec2 texCoord;
+in vec2 uv;
 in vec3 normal;
 in vec3 vertPosition;
 
 struct Material {
-    sampler2D diffuse;
-    sampler2D specular;
+    sampler2D diffuse[MAX_TEXTURES_COUNT];
+    sampler2D specular[MAX_TEXTURES_COUNT];
     float shininess;
 };
 
@@ -41,7 +44,6 @@ struct SpotLight {
 uniform Material material;
 uniform vec3 cameraPosition;
 
-#define MAX_LIGHT_COUNT 32
 
 uniform int dirLightCount;
 uniform int pointLightCount;
@@ -51,22 +53,48 @@ uniform DirectionalLight directionalLights[MAX_LIGHT_COUNT];
 uniform PointLight pointLights[MAX_LIGHT_COUNT];
 uniform SpotLight spotLights[MAX_LIGHT_COUNT];
 
+
+vec3 sample_diffuse() {
+    vec3 color = vec3(0.0f);
+    float total_alpha = 1e-6;
+    for (int i = 0; i < MAX_TEXTURES_COUNT; i++) {
+        vec4 sample = texture(material.diffuse[i], uv);
+        color += sample.rgb * sample.a;
+        total_alpha += sample.a;
+    }
+    return color / total_alpha;
+}
+
+vec3 sample_specular() {
+    vec3 color = vec3(0.0f);
+    float total_alpha = 1e-6;
+    for (int i = 0; i < MAX_TEXTURES_COUNT; i++) {
+        vec4 sample = texture(material.specular[i], uv);
+        color += sample.rgb * sample.a;
+        total_alpha += sample.a;
+    }
+    return color / total_alpha;
+}
+
 vec3 dirLighting(DirectionalLight light) {
     vec3 direction = normalize(-light.direction);
     
+    vec3 diffuse_color = sample_diffuse();
+    vec3 specular_color = sample_specular();
+    
     // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoord));
+    vec3 ambient = light.ambient * diffuse_color;
     
     // diffuse
     float diffuseIntensity = max(0.0f, dot(direction, normal));
-    vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.diffuse, texCoord));
+    vec3 diffuse = light.diffuse * diffuseIntensity * diffuse_color;
     
     //specular
     vec3 reflectedLightDirection = reflect(-direction, normal);
     float specularIntensity = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
     specularIntensity = max(0.0f, specularIntensity);
     specularIntensity = pow(specularIntensity, material.shininess);
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.specular, texCoord));
+    vec3 specular = light.specular * specularIntensity * specular_color;
     return ambient + diffuse + specular;
 }
 
@@ -76,19 +104,22 @@ vec3 pointLighting(PointLight light) {
     direction /= d;
     float attenuation = 1.0f / dot(light.attenuation, vec3(1, d, d*d));
     
+    vec3 diffuse_color = sample_diffuse();
+    vec3 specular_color = sample_specular();
+    
     // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoord));
+    vec3 ambient = light.ambient * diffuse_color;
     
     // diffuse
     float diffuseIntensity = max(0.0f, dot(direction, normal));
-    vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.diffuse, texCoord));
+    vec3 diffuse = light.diffuse * diffuseIntensity * diffuse_color;
     
     //specular
     vec3 reflectedLightDirection = reflect(-direction, normal);
     float specularIntensity = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
     specularIntensity = max(0.0f, specularIntensity);
     specularIntensity = pow(specularIntensity, material.shininess);
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.specular, texCoord));
+    vec3 specular = light.specular * specularIntensity * specular_color;
     return (ambient + diffuse + specular) * attenuation;
 }
 
@@ -102,19 +133,22 @@ vec3 spotLighting(SpotLight light) {
     float intensity = (light.bounds.y - costheta) / (light.bounds.y - light.bounds.x + 1e-6);
     intensity = clamp(intensity, 0.0f, 1.0f);
     
+    vec3 diffuse_color = sample_diffuse();
+    vec3 specular_color = sample_specular();
+    
     // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoord));
+    vec3 ambient = light.ambient * diffuse_color;
     
     // diffuse
     float diffuseIntensity = max(0.0f, dot(direction, normal));
-    vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.diffuse, texCoord));
+    vec3 diffuse = light.diffuse * diffuseIntensity * diffuse_color;
     
     //specular
     vec3 reflectedLightDirection = reflect(-direction, normal);
     float specularIntensity = dot(normalize(cameraPosition - vertPosition), reflectedLightDirection);
     specularIntensity = max(0.0f, specularIntensity);
     specularIntensity = pow(specularIntensity, material.shininess);
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.specular, texCoord));
+    vec3 specular = light.specular * specularIntensity * specular_color;
     return (ambient + diffuse + specular) * attenuation * intensity;
 }
 

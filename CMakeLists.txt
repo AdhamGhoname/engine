@@ -8,7 +8,7 @@ project(Engine CXX)
 # desired options on. Open an issue for additional default support.
 # See: https://github.com/Hoshiningen/engine/issues
 
-set(ENABLE_ASSIMP   OFF CACHE BOOL "Add Open Asset Import Library (assimp) to the project" FORCE)
+set(ENABLE_ASSIMP   ON CACHE BOOL "Add Open Asset Import Library (assimp) to the project" FORCE)
 set(ENABLE_STB   ON CACHE BOOL "Add STB Image to the project" FORCE)
 set(ENABLE_GLM   ON CACHE BOOL "Add GLM to the project" FORCE)
 set(KEEP_FOLDER_STRUCTURE ON CACHE BOOL "Keep the folder structure of the source folder as is in the build project" FORCE)
