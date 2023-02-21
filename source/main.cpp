@@ -12,6 +12,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <sstream>
+#include "Model/Model.h"
 
 using namespace std;
 
@@ -82,10 +84,12 @@ Shader lightSourceShader = Shader();
 Shader standardShader = Shader();
 unsigned int textureID[2];
 
+Model backpack;
+
 float lastTime;
 float deltaTime;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f),
+Camera camera(glm::vec3(0.0f, 0.0f, 5.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f),
 			"persp",
 			0.1f,
@@ -153,71 +157,72 @@ void processInput(GLFWwindow* window)
 void init()
 {
 	glGenVertexArrays(2, VAO);
-
+//
 	unsigned int VBO[2];
 	glGenBuffers(2, VBO);
 	standardShader = Shader("resources/shaders/standard.vert", "resources/shaders/standard.frag");
+    backpack = Model("resources/models/backpack/backpack.obj");
 
-	// Phong shaded objects
-
-	glBindVertexArray(VAO[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
-
-	glGenTextures(2, textureID);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	stbi_set_flip_vertically_on_load(true);
-	int width, height, channels;
-	unsigned char* data = stbi_load(("resources/textures/container2.png"), &width, &height, &channels, 0);
-	cout << width << " " << height << " " << channels << endl;
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
-			GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		cout << "Couldn't load texture image." << endl;
-	}
-	stbi_image_free(data);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textureID[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	data = stbi_load(("resources/textures/container2_specular.png"), &width, &height, &channels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
-			GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		cout << "Couldn't load texture image." << endl;
-	}
-	stbi_image_free(data);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
+//	// Phong shaded objects
+//
+//	glBindVertexArray(VAO[0]);
+//	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+//	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
+//
+//	glGenTextures(2, textureID);
+//	glActiveTexture(GL_TEXTURE0);
+//	glBindTexture(GL_TEXTURE_2D, textureID[0]);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	stbi_set_flip_vertically_on_load(true);
+//	int width, height, channels;
+//	unsigned char* data = stbi_load(("resources/textures/container2.png"), &width, &height, &channels, 0);
+//	cout << width << " " << height << " " << channels << endl;
+//	if (data)
+//	{
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+//			GL_UNSIGNED_BYTE, data);
+//		glGenerateMipmap(GL_TEXTURE_2D);
+//	}
+//	else
+//	{
+//		cout << "Couldn't load texture image." << endl;
+//	}
+//	stbi_image_free(data);
+//	glActiveTexture(GL_TEXTURE1);
+//	glBindTexture(GL_TEXTURE_2D, textureID[1]);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//
+//	data = stbi_load(("resources/textures/container2_specular.png"), &width, &height, &channels, 0);
+//	if (data)
+//	{
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
+//			GL_UNSIGNED_BYTE, data);
+//		glGenerateMipmap(GL_TEXTURE_2D);
+//	}
+//	else
+//	{
+//		cout << "Couldn't load texture image." << endl;
+//	}
+//	stbi_image_free(data);
+//
+//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+//	glEnableVertexAttribArray(0);
+//
+//	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+//	glEnableVertexAttribArray(1);
+//
+//	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+//	glEnableVertexAttribArray(2);
+//
 	// light source
 	lightSourceShader = Shader(("resources/shaders/lightSource.vert"), ("resources/shaders/lightSource.frag"));
-
+//
 	glBindVertexArray(VAO[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
@@ -226,7 +231,7 @@ void init()
 
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
+//
 	glEnable(GL_DEPTH_TEST);
 	lastTime = glfwGetTime();
 }
@@ -237,70 +242,54 @@ void render()
 	deltaTime = glfwGetTime() - lastTime;
 	lastTime = glfwGetTime();
 
-
-	glBindVertexArray(VAO[0]);
-
-	standardShader.use();
-	standardShader.setUniform("sampler1", 0);
-	standardShader.setUniform("sampler2", 1);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textureID[1]);
-
-	glm::mat4 view = camera.GetViewMatrix();
-	glm::mat4 proj = camera.GetProjectionMatrix();
-	standardShader.setUniform("View", view);
-	standardShader.setUniform("Projection", proj);
     glm::vec3 lightPosition = camera.GetPosition();
     glm::vec3 lightDirection = -camera.GetForward();
-	standardShader.setUniform("cameraPosition", camera.GetPosition());
-    standardShader.setUniform("material.diffuse[0]", 0);
-    standardShader.setUniform("material.specular[0]", 1);
-    standardShader.setUniform("material.shininess", 32.0f);
-    
-    standardShader.setUniform("dirLightCount", 1);
-    standardShader.setUniform("spotLightCount", 1);
-    
-    standardShader.setUniform("directionalLights[0].direction", glm::vec3(-0.2f, 1.0f, -0.5f));
-    standardShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.4f));
+
+    standardShader.use();
+    standardShader.setUniform("cameraPosition", camera.GetPosition());
+    standardShader.setUniform("material.shininess", 4.0f);
+    standardShader.setUniform("dirLightCount", 0);
+    standardShader.setUniform("directionalLights[0].direction", glm::vec3(0.0f, 1.0f, -1.0f));
+    standardShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     standardShader.setUniform("directionalLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
     standardShader.setUniform("directionalLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
     
+    standardShader.setUniform("directionalLights[1].direction", glm::vec3(0.0f, 1.0f, 0.0f));
+    standardShader.setUniform("directionalLights[1].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    standardShader.setUniform("directionalLights[1].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
+    standardShader.setUniform("directionalLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
     
-    standardShader.setUniform("spotLights[0].position", lightPosition);
-    standardShader.setUniform("spotLights[0].direction", lightDirection);
-    standardShader.setUniform("spotLights[0].attenuation", glm::vec3(1.0f, 0.09f, 0.32f));
-    standardShader.setUniform("spotLights[0].bounds", glm::cos(glm::vec2(glm::radians(17.5f), glm::radians(22.5f))));
-    standardShader.setUniform("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    standardShader.setUniform("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darkened
-    standardShader.setUniform("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 0.8f));
+    standardShader.setUniform("pointLightCount", 8);
+    for (int i = 0; i < 8; i++) {
+        string prefix = "pointLights[" + to_string(i) + "]";
+        int signX = (i & 1) ? 1 : -1;
+        int signY = ((i >> 1) & 1) ? 1 : -1;
+        int signZ = ((i >> 2) & 1) ? 1 : -1;
+        standardShader.setUniform(prefix + ".position", glm::vec3(signX, signY, signZ) * 10.0f);
+        standardShader.setUniform(prefix + ".ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        standardShader.setUniform(prefix + ".diffuse", glm::vec3(0.2f, 0.2f, 0.2f)); // darkened
+        standardShader.setUniform(prefix + ".specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        standardShader.setUniform(prefix + ".attenuation", glm::vec3(1.0f, 0.09f, 0.032f));
+    }
 
-	for (int i = 0; i < sizeof(cubePositions) / sizeof(cubePositions[0]); i++) {
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[i]);
-		model = glm::rotate(model, glm::radians(20.0f) * i, glm::vec3(0.5f, 0.3f, 0.0f));
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 proj = camera.GetProjectionMatrix();
+    standardShader.setUniform("View", view);
+    standardShader.setUniform("Projection", proj);
 
-		standardShader.setUniform("Model", model);
-		standardShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-		
-
-    
-    glBindVertexArray(VAO[1]);
-    glm::mat4 model = glm::mat4(1.0);
-    model = glm::translate(model, lightPosition);
-    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model,  glm::vec3(0.0f));
+    model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    standardShader.setUniform("Model", model);
+    standardShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
+    backpack.render(standardShader);
 
     lightSourceShader.use();
     lightSourceShader.setUniform("Model", model);
     lightSourceShader.setUniform("View", view);
     lightSourceShader.setUniform("Projection", proj);
     lightSourceShader.setUniform("Normal", glm::mat3(glm::transpose(glm::inverse(model))));
-	glPointSize(10);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 

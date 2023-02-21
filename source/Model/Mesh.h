@@ -24,8 +24,8 @@ private:
     void init();
 public:
     vector<Vertex> vertices;
-    vector<int> indices;
+    vector<unsigned int> indices;
     vector<Texture> textures;
     void render(Shader& shader);
-    Mesh(vector<Vertex> vertices, vector<int> indices, vector<Texture> textures);
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
 };

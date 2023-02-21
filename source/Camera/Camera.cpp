@@ -114,12 +114,19 @@ void Camera::TranslateRelative(glm::vec3 offset)
 
 void Camera::OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
-	if (!this->moved)
-	{
-		this->lastMousePos = glm::vec2(xpos, ypos);
-		moved = true;
-		return;
-	}
+    
+    if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)) {
+        this->moved = false;
+        return;
+    }
+    
+    if (!this->moved)
+    {
+        this->lastMousePos = glm::vec2(xpos, ypos);
+        moved = true;
+        return;
+    }
+    
 	glm::vec2 current = glm::vec2(xpos, ypos);
 	glm::vec2 offset = current - this->lastMousePos;
 	//offset.y *= -1;
