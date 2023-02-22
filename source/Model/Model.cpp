@@ -23,7 +23,7 @@ void Model::loadModel(string path) {
         return;
     }
     fs::path p = path;
-    directory = p.parent_path();
+    directory = p.parent_path().generic_string();
     processNode(scene->mRootNode, scene);
 }
 
@@ -91,7 +91,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTextureType 
 }
 
 unsigned int Model::TextureFromFile(string directory, string filename) {
-    string fullpath = fs::path(directory) / fs::path(filename);
+    string fullpath = (fs::path(directory) / fs::path(filename)).generic_string();
     
     if (textures.count(fullpath)) {
         return textures[fullpath];

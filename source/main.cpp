@@ -247,7 +247,7 @@ void render()
 
     standardShader.use();
     standardShader.setUniform("cameraPosition", camera.GetPosition());
-    standardShader.setUniform("material.shininess", 4.0f);
+    standardShader.setUniform("material.shininess", 32.0f);
     standardShader.setUniform("dirLightCount", 0);
     standardShader.setUniform("directionalLights[0].direction", glm::vec3(0.0f, 1.0f, -1.0f));
     standardShader.setUniform("directionalLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
@@ -265,7 +265,7 @@ void render()
         int signX = (i & 1) ? 1 : -1;
         int signY = ((i >> 1) & 1) ? 1 : -1;
         int signZ = ((i >> 2) & 1) ? 1 : -1;
-        standardShader.setUniform(prefix + ".position", glm::vec3(signX, signY, signZ) * 10.0f);
+        standardShader.setUniform(prefix + ".position", glm::vec3(signX, signY, signZ) * 2.0f);
         standardShader.setUniform(prefix + ".ambient", glm::vec3(0.05f, 0.05f, 0.05f));
         standardShader.setUniform(prefix + ".diffuse", glm::vec3(0.2f, 0.2f, 0.2f)); // darkened
         standardShader.setUniform(prefix + ".specular", glm::vec3(1.0f, 1.0f, 1.0f));

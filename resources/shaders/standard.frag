@@ -78,7 +78,7 @@ vec3 sample_specular() {
 }
 
 vec3 sample_normal() {
-    vec3 normal = vec3(texture(material.normal, uv));
+    vec3 normal = normalize(normal_mat * vec3(texture(material.normal, uv)));
     //vec3 normal = normalize(vec3(texture(material.normal, uv)));
     return normal;
 }
