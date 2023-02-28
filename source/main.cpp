@@ -14,6 +14,11 @@
 #include <vector>
 #include <sstream>
 #include "Model/Model.h"
+#include "Object/Object.h"
+#include "Object/Components/Transform/Transform.h"
+#include "Math/Vector2.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 using namespace std;
 
