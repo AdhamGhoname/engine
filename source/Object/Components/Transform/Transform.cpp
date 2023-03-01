@@ -126,6 +126,42 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position, Quater
 	valid_ = true;
 }
 
+void Transform::RecomputeTransform() {
+	glm::mat4 parentLToW = HasParent() ? parent_->GetLocalToWorldMatrix() : glm::mat4(1.0f);
+	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
+
+	position_ = parentLToW * Vector4(localPosition_, 1.0f);
+	rotation_ = localRotation_ * parentRot;
+	scale_ = parentLToW * Vector4(localScale_, 0.0f);
+	localToWorldMatrix_ =
+		parentLToW *
+		glm::translate(glm::mat4(1.0f), localPosition_.GetGLMValue()) *
+		localRotation_.GetTransformationMatrix() *
+		glm::scale(glm::mat4(1.0f), localScale_.GetGLMValue());
+	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
+}
+
+void Transform::RecomputeLocalTransform() {
+	glm::mat4 parentWToL = HasParent() ? parent_->GetWorldToLocalMatrix() : glm::mat4(1.0f);
+	glm::mat4 parentLToW = HasParent() ? parent_->GetLocalToWorldMatrix() : glm::mat4(1.0f);
+	localPosition_ = parentWToL * Vector4(position_, 1.0f);
+	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
+	localRotation_ = rotation_ * Quaternion::Inverse(parentRot);
+	localScale_ = parentWToL * Vector4(scale_, 0.0f);
+	localToWorldMatrix_ =
+		parentLToW *
+		glm::translate(glm::mat4(1.0f), localPosition_.GetGLMValue()) *
+		localRotation_.GetTransformationMatrix() *
+		glm::scale(glm::mat4(1.0f), localScale_.GetGLMValue());
+	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
+}
+
+void Transform::RecomputeSubtree(Transform* root) {
+	root->RecomputeTransform();
+	for (auto child : root->children_) {
+		Transform::RecomputeSubtree(child);
+	}
+}
 
 Transform* Transform::GetParent() {
 	return this->parent_;
@@ -136,6 +172,9 @@ void Transform::SetParent(Transform* parent) {
 		valid_ = false;
 	}
 	parent_ = parent;
+	siblingIndex_ = parent->children_.size();
+	parent->children_.push_back(this);
+	RecomputeTransform();
 }
 
 Object* Transform::GetObject() {
@@ -156,7 +195,7 @@ Vector3 Transform::GetLocalPosition() {
 
 void Transform::SetLocalPosition(Vector3 position) {
 	localPosition_ = position;
-	RecomputeTransform();
+	RecomputeSubtree(this);
 }
 
 Quaternion Transform::GetLocalRotation() {
@@ -165,7 +204,7 @@ Quaternion Transform::GetLocalRotation() {
 
 void Transform::SetLocalRotation(Quaternion rotation) {
 	localRotation_ = rotation;
-	RecomputeTransform();
+	RecomputeSubtree(this);
 }
 
 Vector3 Transform::GetLocalScale() {
@@ -174,28 +213,19 @@ Vector3 Transform::GetLocalScale() {
 
 void Transform::SetLocalScale(Vector3 scale) {
 	localScale_ = scale;
-	RecomputeTransform();
+	RecomputeSubtree(this);
 }
 
 Vector3 Transform::GetPosition() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	return position_;
 }
 
 void Transform::SetPosition(Vector3 position) {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	Vector3 newLocalPosition = worldToLocalMatrix_ * Vector4(position, 1.0f);
 	SetLocalPosition(newLocalPosition);
 }
 
 Quaternion Transform::GetRotation() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	return rotation_;
 }
 
@@ -206,4 +236,52 @@ void Transform::SetRotation(Quaternion rotation) {
 	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
 	Quaternion newLocalRotation = rotation * Quaternion::Inverse(parentRot);
 	SetLocalRotation(newLocalRotation);
+}
+
+Vector3 Transform::GetScale() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return scale_;
+}
+
+Vector3 Transform::Forward() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return localToWorldMatrix_ * Vector3::Forward();
+}
+
+Vector3 Transform::Up() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return localToWorldMatrix_ * Vector3::Up();
+}
+
+Vector3 Transform::Right() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return localToWorldMatrix_ * Vector3::Right();
+}
+
+Vector3 Transform::GetEulerAngles() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return rotation_.GetEulerAngles();
+}
+
+Vector3 Transform::GetLocalEulerAngles() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
+	return localRotation_.GetEulerAngles();
+}
+
+glm::mat4 Transform::GetLocalToWorldMatrix() {
+	if (!valid_) {
+		RecomputeTransform();
+	}
 }
