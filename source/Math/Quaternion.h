@@ -7,10 +7,11 @@
 struct Quaternion {
 private:
     glm::quat value_ = glm::quat(glm::vec4(0.0f));
+    Quaternion(glm::quat value);
 public:
     Quaternion();
     Quaternion(float x, float y, float z, float w);
-    Quaternion(glm::quat value);
+    Quaternion(Vector4 v);
     glm::mat4 GetTransformationMatrix();
     Quaternion Normalized();
     Vector3 GetEulerAngles();
@@ -38,5 +39,11 @@ public:
     static Quaternion Normalize(Quaternion q);
     static Quaternion Slerp(Quaternion a, Quaternion b, float t);
     static Quaternion SlerpUnclamped(Quaternion a, Quaternion b, float t);
+    static Quaternion Identity();
+
+    // operators
+    Quaternion operator*(Quaternion& other);
+    bool operator==(Quaternion& other);
+    bool operator!=(Quaternion& other);
 };
 

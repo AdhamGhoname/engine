@@ -5,23 +5,77 @@
 
 using namespace std;
 class Object;
+class Component;
 
-class Transform {
+class Transform : public Component {
 private:
 	Transform* parent_;
     Object* object_;
 	vector<Transform*> children_;
-    glm::vec3 position_;
-    glm::fquat rotation_;
-    glm::vec3 scale_;
-    
+    Vector3 localPosition_;
+    Quaternion localRotation_;
+    Vector3 localScale_;
+    Vector3 position_;
+    Quaternion rotation_;
+    Vector3 scale_;
+    unsigned int siblingIndex_;
+    bool valid_;
+    glm::mat4 localToWorldMatrix_;
+    glm::mat4 worldToLocalMatrix_;
+    void RecomputeTransform();
 public:
+    Transform(Object* object);
+    Transform(Object* object, Vector3 position);
+    Transform(Object* object, Vector3 position, Quaternion rotation);
+    Transform(Object* object, Vector3 position, Quaternion rotation, Vector3 scale);
+    Transform(Object* object, Transform* parent);
+    Transform(Object* object, Transform* parent, Vector3 position);
+    Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation);
+    Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale);
+    // getters and setters
     Transform* GetParent();
     void SetParent(Transform* parent);
     Object* GetObject();
-    int GetChildCount();
-    Transform* GetChild(int index);
-    
-    glm::vec3 GetPosition();
-    glm::vec3 SetPosition();
+    unsigned int GetChildCount();
+    Transform* GetChild(unsigned int index);
+    Vector3 GetLocalPosition();
+    void SetLocalPosition(Vector3 position);
+    Quaternion GetLocalRotation();
+    void SetLocalRotation(Quaternion rotation);
+    Vector3 GetLocalScale();
+    void SetLocalScale(Vector3 scale);
+    Vector3 GetPosition();
+    void SetPosition(Vector3 position);
+    Quaternion GetRotation();
+    void SetRotation(Quaternion rotation);
+    Vector3 GetScale();
+
+    // utils
+    Vector3 Forward();
+    Vector3 Up();
+    Vector3 Right();
+    Vector3 GetEulerAngles();
+    Vector3 GetLocalEulerAngles();
+    glm::mat4 GetLocalToWorldMatrix();
+    glm::mat4 GetWorldToLocalMatrix();
+
+    void DetachChildren();
+    Transform* Find(std::string name);
+    unsigned int GetSiblingIndex();
+    Vector3 TransfromDirection();
+    Vector3 TransformPoint();
+    Vector3 TransformVector();
+    Vector3 InverseTransformDirection();
+    Vector3 InverseTransformPoint();
+    Vector3 InverseTransformVector();
+    bool IsChildOf(Transform* parent);
+    bool HasParent();
+    void LookAt(Vector3 position);
+    void Rotate(Vector3 euler);
+    void Rotate(float x, float y, float z);
+    void RotateAround(Vector3 point, Vector3 axis, float angle);
+    void SetAsFirstSibling();
+    void SetAsLastSibling();
+    void SetSiblingIndex(unsigned int index);
+    void Translate(Vector3 delta);
 };

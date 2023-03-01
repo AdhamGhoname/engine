@@ -13,10 +13,13 @@ public:
     float GetMagnitude();
     Vector2 Normalized();
     float GetSqrMagnitude();
+    glm::vec2 GetGLMValue();
     float x();
     float y();
     void Normalize();
     void Set(float x, float y);
+    void SetX(float x);
+    void SetY(float y);
     std::string ToString();
     
     // static
@@ -28,7 +31,7 @@ public:
     static Vector2 Zero();
     
     static float Angle(Vector2 a, Vector2 b);
-    static Vector2 ClampMangitude(Vector2 v, float maxLength);
+    static Vector2 ClampMagnitude(Vector2 v, float maxLength);
     static float Distance(Vector2 a, Vector2 b);
     static float Dot(Vector2 a, Vector2 b);
     static Vector2 Lerp(Vector2 a, Vector2 b, float t);
@@ -43,8 +46,10 @@ public:
     // operators
     float operator[](int index);
     Vector2 operator-(Vector2& other);
+    Vector2 operator-(float other);
     Vector2 operator-=(Vector2& other);
     Vector2 operator+(Vector2& other);
+    Vector2 operator+(float other);
     Vector2 operator+=(Vector2& other);
     Vector2 operator*(float c);
     Vector2 operator*=(float c);
@@ -54,3 +59,7 @@ public:
     bool operator!=(Vector2& other);
 };
 
+Vector2 operator*(float b, Vector2& a);
+Vector2 operator+(float b, Vector2& a);
+Vector2 operator-(float b, Vector2& a);
+Vector2 operator/(float b, Vector2& a);
