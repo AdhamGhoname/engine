@@ -103,19 +103,15 @@ Vector2 Vector2::operator*(float c) {
     return Vector2(value_.x * c, value_.y*c);
 }
 
-Vector2 Vector2::operator*(float c) {
-    return Vector2(value_.x * c, value_.y * c);
-}
-
 Vector2 Vector2::operator/(float c) {
     return Vector2(value_.x / c, value_.y / c);
 }
 
-Vector2 Vector2::operator+(Vector2& other) {
+Vector2 Vector2::operator+(Vector2 other) {
     return Vector2(value_.x + other.x(), value_.y * other.y());
 }
 
-Vector2 Vector2::operator-(Vector2& other) {
+Vector2 Vector2::operator-(Vector2 other) {
     return Vector2(value_.x - other.x(), value_.y - other.y());
 }
 
@@ -140,39 +136,40 @@ Vector2 Vector2::operator/=(float c) {
     return result;
 }
 
-Vector2 Vector2::operator+=(Vector2& other) {
+Vector2 Vector2::operator+=(Vector2 other) {
     Vector2 result = *this + other;
     this->Set(result.x(), result.y());
     return result;
 }
 
-Vector2 Vector2::operator-=(Vector2& other) {
+Vector2 Vector2::operator-=(Vector2 other) {
     Vector2 result = *this + other;
     this->Set(result.x(), result.y());
     return result;
 }
 
-Vector2 operator*(float b, Vector2& a) {
-    return a * b;
+Vector2 operator*(float b, Vector2 a) {
+    return b * a;
 }
 
-Vector2 operator+(float b, Vector2& a) {
+Vector2 operator+(float b, Vector2 a) {
     return a + b;
 }
 
-Vector2 operator-(float b, Vector2& a) {
-    return -1.0f * (a - b);
+Vector2 operator-(float b, Vector2 a) {
+    Vector2 diff = a - b;
+    return -1.0f * diff;
 }
 
-Vector2 operator/(float b, Vector2& a) {
+Vector2 operator/(float b, Vector2 a) {
     return Vector2(b / a.x(), b / a.y());
 }
 
-bool Vector2::operator==(Vector2& other) {
+bool Vector2::operator==(Vector2 other) {
     return value_.x == other.x() && value_.y == other.y();
 }
 
-bool Vector2::operator!=(Vector2& other) {
+bool Vector2::operator!=(Vector2 other) {
     return !(*this == other);
 }
 

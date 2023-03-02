@@ -15,7 +15,6 @@ Transform::Transform(Object* object) {
 	siblingIndex_ = 0;
 	localToWorldMatrix_ = glm::mat4(1.0f);
 	worldToLocalMatrix_ = glm::mat4(1.0f);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Vector3 position) {
@@ -33,7 +32,6 @@ Transform::Transform(Object* object, Vector3 position) {
 	localToWorldMatrix_ = glm::mat4(1.0f);
 	localToWorldMatrix_ = glm::translate(localToWorldMatrix_, position.GetGLMValue());
 	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Vector3 position, Quaternion rotation) {
@@ -52,7 +50,6 @@ Transform::Transform(Object* object, Vector3 position, Quaternion rotation) {
 						rotation.GetTransformationMatrix();
 
 	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Vector3 position, Quaternion rotation, Vector3 scale) {
@@ -72,7 +69,6 @@ Transform::Transform(Object* object, Vector3 position, Quaternion rotation, Vect
 		glm::scale(glm::mat4(1.0f), scale.GetGLMValue());
 
 	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Transform* parent) {
@@ -86,7 +82,6 @@ Transform::Transform(Object* object, Transform* parent) {
 	localScale_ = Vector3::One();
 
 	SetParent(parent);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Transform* parent, Vector3 position) {
@@ -98,7 +93,6 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position) {
 	localScale_ = Vector3::One();
 
 	SetParent(parent);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation) {
@@ -110,7 +104,6 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position, Quater
 	localScale_ = Vector3::One();
 
 	SetParent(parent);
-	valid_ = true;
 }
 
 Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale) {
@@ -123,7 +116,6 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position, Quater
 
 	SetParent(parent);
 	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-	valid_ = true;
 }
 
 void Transform::RecomputeTransform() {
@@ -168,13 +160,26 @@ Transform* Transform::GetParent() {
 }
 
 void Transform::SetParent(Transform* parent) {
-	if (!this->IsChildOf(parent)) {
-		valid_ = false;
-	}
-	parent_ = parent;
-	siblingIndex_ = parent->children_.size();
-	parent->children_.push_back(this);
-	RecomputeTransform();
+    if (IsChildOf(parent)) {
+        return;
+    }
+    
+    if (parent_ != NULL) {
+        for (int i = siblingIndex_+1; i < parent_->GetChildCount(); i++) {
+            parent_->children_[i]->siblingIndex_--;
+        }
+        parent->children_.erase(parent_->children_.begin() + siblingIndex_);
+    }
+    
+    parent_ = parent;
+    if (parent == NULL) {
+        siblingIndex_ = 0;
+    }
+    else {
+        siblingIndex_ = (unsigned int)parent->children_.size();
+        parent->children_.push_back(this);
+    }
+	RecomputeLocalTransform();
 }
 
 Object* Transform::GetObject() {
@@ -182,11 +187,12 @@ Object* Transform::GetObject() {
 }
 
 unsigned int Transform::GetChildCount() {
-	return children_.size();
+	return (unsigned int)children_.size();
 }
 
 Transform* Transform::GetChild(unsigned int index) {
 	assert(index <= children_.size());
+    return children_[index];
 }
 
 Vector3 Transform::GetLocalPosition() {
@@ -221,7 +227,8 @@ Vector3 Transform::GetPosition() {
 }
 
 void Transform::SetPosition(Vector3 position) {
-	Vector3 newLocalPosition = worldToLocalMatrix_ * Vector4(position, 1.0f);
+    glm::mat4 parentWToL = HasParent() ? parent_->GetWorldToLocalMatrix() : glm::mat4(1.0f);
+	Vector3 newLocalPosition = parentWToL * Vector4(position, 1.0f);
 	SetLocalPosition(newLocalPosition);
 }
 
@@ -230,58 +237,99 @@ Quaternion Transform::GetRotation() {
 }
 
 void Transform::SetRotation(Quaternion rotation) {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
 	Quaternion newLocalRotation = rotation * Quaternion::Inverse(parentRot);
 	SetLocalRotation(newLocalRotation);
 }
 
 Vector3 Transform::GetScale() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	return scale_;
 }
 
+std::string Transform::GetName() {
+    return object_->GetName();
+}
+
 Vector3 Transform::Forward() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
-	return localToWorldMatrix_ * Vector3::Forward();
+	return localToWorldMatrix_ * Vector4(Vector3::Forward(), 0.0f);
 }
 
 Vector3 Transform::Up() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
-	return localToWorldMatrix_ * Vector3::Up();
+	return localToWorldMatrix_ * Vector4(Vector3::Up(), 0.0f);
 }
 
 Vector3 Transform::Right() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
-	return localToWorldMatrix_ * Vector3::Right();
+	return localToWorldMatrix_ * Vector4(Vector3::Right(), 0.0f);
 }
 
 Vector3 Transform::GetEulerAngles() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	return rotation_.GetEulerAngles();
 }
 
 Vector3 Transform::GetLocalEulerAngles() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
 	return localRotation_.GetEulerAngles();
 }
 
 glm::mat4 Transform::GetLocalToWorldMatrix() {
-	if (!valid_) {
-		RecomputeTransform();
-	}
+    return localToWorldMatrix_;
+}
+
+glm::mat4 Transform::GetWorldToLocalMatrix() {
+    return worldToLocalMatrix_;
+}
+
+void Transform::DetachChildren() {
+    for (int i = 0; i < GetChildCount(); i++) {
+        GetChild(i)->SetParent(NULL);
+    }
+}
+
+Transform* Transform::FindChild(std::string name) {
+    for (int i = 0; i < GetChildCount(); i++) {
+        if (GetChild(i)->GetName() == name) {
+            return GetChild(i);
+        }
+    }
+    return NULL;
+}
+
+unsigned int Transform::GetSiblingIndex() {
+    return siblingIndex_;
+}
+
+Vector3 Transform::TransfromDirection(Vector3 direction) {
+    return GetLocalToWorldMatrix() * Vector4(direction, 0.0f);
+}
+
+Vector3 Transform::TransformVector(Vector3 vector) {
+    return GetLocalToWorldMatrix() * Vector4(vector, 1.0f);
+}
+
+Vector3 Transform::InverseTransformDirection(Vector3 direction) {
+    return GetWorldToLocalMatrix() * Vector4(direction, 0.0f);
+}
+
+Vector3 Transform::InverseTransformVector(Vector3 vector) {
+    return GetWorldToLocalMatrix() * Vector4(vector, 1.0f);
+}
+
+bool Transform::IsChildOf(Transform *parent) {
+    return parent == parent_;
+}
+
+bool Transform::HasParent() {
+    return parent_ != NULL;
+}
+
+void Transform::LookAt(Vector3 position) {
+    SetLocalRotation(Quaternion::LookRotation(position - position_, Vector3::Up()));
+}
+
+void Transform::Rotate(Vector3 euler) {
+    Vector3 currentEuler = GetEulerAngles();
+    SetLocalRotation(Quaternion::Euler(currentEuler + euler));
+}
+
+void Transform::Rotate(float x, float y, float z) {
+    Rotate(Vector3(x, y, z));
 }

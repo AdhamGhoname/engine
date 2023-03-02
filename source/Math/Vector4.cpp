@@ -113,7 +113,7 @@ float Vector4::operator[](int index) {
 	}
 }
 
-Vector4 Vector4::operator-(Vector4& other) {
+Vector4 Vector4::operator-(Vector4 other) {
 	return Vector4(this->x() - other.x(),
 		this->y() - other.y(),
 		this->z() - other.z(),
@@ -127,12 +127,12 @@ Vector4 Vector4::operator-(float other) {
 		this->w() - other);
 }
 
-Vector4 Vector4::operator-=(Vector4& other) {
+Vector4 Vector4::operator-=(Vector4 other) {
 	value_ = glm::vec4(value_.x - other.x(), value_.y - other.y(), value_.z - other.z(), value_.w - other.w());
 	return Vector4(value_);
 }
 
-Vector4 Vector4::operator+(Vector4& other) {
+Vector4 Vector4::operator+(Vector4 other) {
 	return Vector4(this->x() + other.x(),
 		this->y() + other.y(),
 		this->z() + other.z(),
@@ -146,7 +146,7 @@ Vector4 Vector4::operator+(float other) {
 		this->w() + other);
 }
 
-Vector4 Vector4::operator+=(Vector4& other) {
+Vector4 Vector4::operator+=(Vector4 other) {
 	value_ = glm::vec4(value_.x + other.x(), value_.y + other.y(), value_.z + other.z(), value_.w + other.w());
 	return Vector4(value_);
 }
@@ -175,32 +175,32 @@ Vector4 Vector4::operator/=(float other) {
 	return Vector4(value_);
 }
 
-bool Vector4::operator==(Vector4& other) {
+bool Vector4::operator==(Vector4 other) {
 	return value_ == other.value_;
 }
 
-bool Vector4::operator!=(Vector4& other) {
+bool Vector4::operator!=(Vector4 other) {
 	return value_ != other.value_;
 }
 
-Vector4 operator*(float b, Vector4& a) {
+Vector4 operator*(float b, Vector4 a) {
 	return a * b;
 }
 
-Vector4 operator*(glm::mat4 m, Vector4& v) {
+Vector4 operator*(glm::mat4 m, Vector4 v) {
 	glm::vec4 res = m * v.GetGLMValue();
 	return Vector4(res.x, res.y, res.z, res.w);
 }
 
-Vector4 operator+(float b, Vector4& a) {
+Vector4 operator+(float b, Vector4 a) {
 	return a + b;
 }
 
-Vector4 operator-(float b, Vector4& a) {
+Vector4 operator-(float b, Vector4 a) {
 	return -1.0f * (a - b);
 }
 
-Vector4 operator/(float b, Vector4& a) {
+Vector4 operator/(float b, Vector4 a) {
 	return Vector4(b / a.x(), b / a.y(), b / a.z(), b / a.w());
 }
 

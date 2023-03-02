@@ -1,8 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <string>
-#include "Quaternion.h"
-
+#include "MathCommons.h"
 
 struct Vector4 {
 private:
@@ -51,22 +50,22 @@ public:
     
     // operators
     float operator[](int index);
-    Vector4 operator-(Vector4& other);
+    Vector4 operator-(Vector4 other);
     Vector4 operator-(float other);
-    Vector4 operator-=(Vector4& other);
-    Vector4 operator+(Vector4& other);
+    Vector4 operator-=(Vector4 other);
+    Vector4 operator+(Vector4 other);
     Vector4 operator+(float other);
-    Vector4 operator+=(Vector4& other);
+    Vector4 operator+=(Vector4 other);
     Vector4 operator*(float c);
     Vector4 operator*=(float c);
     Vector4 operator/(float c);
     Vector4 operator/=(float c);
-    bool operator==(Vector4& other);
-    bool operator!=(Vector4& other);
+    bool operator==(Vector4 other);
+    bool operator!=(Vector4 other);
 };
 
-Vector4 operator*(float b, Vector4& a);
-Vector4 operator*(glm::mat4 m, Vector4& v);
-Vector4 operator+(float b, Vector4& a);
-Vector4 operator-(float b, Vector4& a);
-Vector4 operator/(float b, Vector4& a);
+Vector4 operator*(float b, Vector4 a);
+Vector4 operator*(glm::mat4 m, Vector4 v);
+Vector4 operator+(float b, Vector4 a);
+Vector4 operator-(float b, Vector4 a);
+Vector4 operator/(float b, Vector4 a);

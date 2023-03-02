@@ -88,15 +88,15 @@ float Quaternion::operator[](int index) {
     }
 }
 
-Quaternion Quaternion::operator*(Quaternion& other) {
+Quaternion Quaternion::operator*(Quaternion other) {
     return Quaternion(value_ * other.value_);
 }
 
-bool Quaternion::operator==(Quaternion& other) {
+bool Quaternion::operator==(Quaternion other) {
     return value_ == other.value_;
 }
 
-bool Quaternion::operator!=(Quaternion& other) {
+bool Quaternion::operator!=(Quaternion other) {
     return value_ != other.value_;
 }
 
@@ -116,6 +116,12 @@ Quaternion Quaternion::FromToRotation(Vector3 from, Vector3 to) {
     Quaternion ans;
     ans.SetFromToRotation(from, to);
     return ans;
+}
+
+Quaternion Quaternion::LookRotation(Vector3 forward, Vector3 up) {
+    Quaternion q;
+    q.SetLookRotation(forward, up);
+    return q;
 }
 
 Quaternion Quaternion::Inverse(Quaternion q) {

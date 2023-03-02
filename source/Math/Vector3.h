@@ -1,8 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <string>
-#include "Vector2.h"
-#include "Vector4.h"
+#include "MathCommons.h"
 
 struct Vector3 {
 private:
@@ -60,22 +59,22 @@ public:
     
     // operators
     float operator[](int index);
-    Vector3 operator-(Vector3& other);
+    Vector3 operator-(Vector3 other);
     Vector3 operator-(float other);
-    Vector3 operator-=(Vector3& other);
-    Vector3 operator+(Vector3& other);
+    Vector3 operator-=(Vector3 other);
+    Vector3 operator+(Vector3 other);
     Vector3 operator+(float other);
-    Vector3 operator+=(Vector3& other);
+    Vector3 operator+=(Vector3 other);
     Vector3 operator*(float c);
     Vector3 operator*=(float c);
     Vector3 operator/(float c);
     Vector3 operator/=(float c);
-    bool operator==(Vector3& other);
-    bool operator!=(Vector3& other);
+    bool operator==(Vector3 other);
+    bool operator!=(Vector3 other);
 };
 
-Vector3 operator*(float b, Vector3& a);
-Vector3 operator*(glm::mat3 m, Vector3& v);
-Vector3 operator+(float b, Vector3& a);
-Vector3 operator-(float b, Vector3& a);
-Vector3 operator/(float b, Vector3& a);
+Vector3 operator*(float b, Vector3 a);
+Vector3 operator*(glm::mat3 m, Vector3 v);
+Vector3 operator+(float b, Vector3 a);
+Vector3 operator-(float b, Vector3 a);
+Vector3 operator/(float b, Vector3 a);

@@ -2,12 +2,12 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "../../Component.h"
+#include "../../../Math/MathCommons.h"
 
 using namespace std;
 class Object;
-class Component;
 
-class Transform : public Component {
+class Transform {
 private:
 	Transform* parent_;
     Object* object_;
@@ -19,9 +19,11 @@ private:
     Quaternion rotation_;
     Vector3 scale_;
     unsigned int siblingIndex_;
-    bool valid_;
     glm::mat4 localToWorldMatrix_;
     glm::mat4 worldToLocalMatrix_;
+    glm::mat4 localToWorldMatrixScaled_;
+    glm::mat4 worldToLocalMatrixScaled_;
+    
     void RecomputeTransform();
     void RecomputeLocalTransform();
     static void RecomputeSubtree(Transform* root);
@@ -52,6 +54,7 @@ public:
     Quaternion GetRotation();
     void SetRotation(Quaternion rotation);
     Vector3 GetScale();
+    std::string GetName();
 
     // utils
     Vector3 Forward();
@@ -63,14 +66,12 @@ public:
     glm::mat4 GetWorldToLocalMatrix();
 
     void DetachChildren();
-    Transform* Find(std::string name);
+    Transform* FindChild(std::string name);
     unsigned int GetSiblingIndex();
-    Vector3 TransfromDirection();
-    Vector3 TransformPoint();
-    Vector3 TransformVector();
-    Vector3 InverseTransformDirection();
-    Vector3 InverseTransformPoint();
-    Vector3 InverseTransformVector();
+    Vector3 TransfromDirection(Vector3 direction);
+    Vector3 TransformVector(Vector3 vector);
+    Vector3 InverseTransformDirection(Vector3 direction);
+    Vector3 InverseTransformVector(Vector3 vector);
     bool IsChildOf(Transform* parent);
     bool HasParent();
     void LookAt(Vector3 position);

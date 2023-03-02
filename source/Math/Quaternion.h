@@ -1,8 +1,6 @@
 #pragma once
 #include <glm/gtx/quaternion.hpp>
-#include "Vector3.h"
-#include "Vector4.h"
-#include <string>
+#include "MathCommons.h"
 
 struct Quaternion {
 private:
@@ -33,6 +31,7 @@ public:
     static Quaternion AngleAxis(float angle, Vector3 axis);
     static float Dot(Quaternion a, Quaternion b);
     static Quaternion FromToRotation(Vector3 from, Vector3 to);
+    static Quaternion LookRotation(Vector3 forward, Vector3 up);
     static Quaternion Inverse(Quaternion q);
     static Quaternion Lerp(Quaternion a, Quaternion b, float t);
     static Quaternion LerpUnclamped(Quaternion a, Quaternion b, float t);
@@ -42,8 +41,8 @@ public:
     static Quaternion Identity();
 
     // operators
-    Quaternion operator*(Quaternion& other);
-    bool operator==(Quaternion& other);
-    bool operator!=(Quaternion& other);
+    Quaternion operator*(Quaternion other);
+    bool operator==(Quaternion other);
+    bool operator!=(Quaternion other);
 };
 

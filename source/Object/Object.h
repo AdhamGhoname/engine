@@ -1,15 +1,14 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Component.h"
-#include "Components/Transform/Transform.h"
-#include "../Math/Quaternion.h"
-#include "../Math/Vector3.h"
+#include "../Math/MathCommons.h"
 #include "../Scene/Scene.h"
+#include "ObjectCommons.h"
 #include <typeinfo>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
+
 using namespace std;
 
 class Object {
@@ -19,6 +18,7 @@ private:
     bool activeSelf_;
     Scene* scene_;
     unordered_map < type_index, vector<Component*> > components_;
+    std::string name_;
 public:
     Object();
     Object(Vector3 position);
@@ -26,6 +26,7 @@ public:
     Object(Vector3 position, Quaternion rotation, Vector3 scale);
     ~Object();
 
+    std::string GetName();
     void SetActive(bool state);
     template<typename T> T AddComponent();
     template<typename T> T GetComponent();

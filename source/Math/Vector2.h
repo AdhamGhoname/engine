@@ -45,21 +45,21 @@ public:
     
     // operators
     float operator[](int index);
-    Vector2 operator-(Vector2& other);
+    Vector2 operator-(Vector2 other);
     Vector2 operator-(float other);
-    Vector2 operator-=(Vector2& other);
-    Vector2 operator+(Vector2& other);
+    Vector2 operator-=(Vector2 other);
+    Vector2 operator+(Vector2 other);
     Vector2 operator+(float other);
-    Vector2 operator+=(Vector2& other);
+    Vector2 operator+=(Vector2 other);
     Vector2 operator*(float c);
     Vector2 operator*=(float c);
     Vector2 operator/(float c);
     Vector2 operator/=(float c);
-    bool operator==(Vector2& other);
-    bool operator!=(Vector2& other);
+    bool operator==(Vector2 other);
+    bool operator!=(Vector2 other);
 };
 
-Vector2 operator*(float b, Vector2& a);
-Vector2 operator+(float b, Vector2& a);
-Vector2 operator-(float b, Vector2& a);
-Vector2 operator/(float b, Vector2& a);
+Vector2 operator*(float b, Vector2 a);
+Vector2 operator+(float b, Vector2 a);
+Vector2 operator-(float b, Vector2 a);
+Vector2 operator/(float b, Vector2 a);

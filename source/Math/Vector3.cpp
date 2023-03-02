@@ -129,7 +129,7 @@ float Vector3::operator[](int index) {
 	}
 }
 
-Vector3 Vector3::operator-(Vector3& other) {
+Vector3 Vector3::operator-(Vector3 other) {
 	return Vector3(this->x() - other.x(),
 				   this->y() - other.y(),
 				   this->z() - other.z());
@@ -141,12 +141,12 @@ Vector3 Vector3::operator-(float other) {
 				   this->z() - other);
 }
 
-Vector3 Vector3::operator-=(Vector3& other) {
+Vector3 Vector3::operator-=(Vector3 other) {
 	value_ = glm::vec3(value_.x - other.x(), value_.y - other.y(), value_.z - other.z());
 	return Vector3(value_);
 }
 
-Vector3 Vector3::operator+(Vector3& other) {
+Vector3 Vector3::operator+(Vector3 other) {
 	return Vector3(this->x() + other.x(),
 		this->y() + other.y(),
 		this->z() + other.z());
@@ -158,7 +158,7 @@ Vector3 Vector3::operator+(float other) {
 		this->z() + other);
 }
 
-Vector3 Vector3::operator+=(Vector3& other) {
+Vector3 Vector3::operator+=(Vector3 other) {
 	value_ = glm::vec3(value_.x + other.x(), value_.y + other.y(), value_.z + other.z());
 	return Vector3(value_);
 }
@@ -185,32 +185,32 @@ Vector3 Vector3::operator/=(float other) {
 	return Vector3(value_);
 }
 
-bool Vector3::operator==(Vector3& other) {
+bool Vector3::operator==(Vector3 other) {
 	return value_ == other.value_;
 }
 
-bool Vector3::operator!=(Vector3& other) {
+bool Vector3::operator!=(Vector3 other) {
 	return value_ != other.value_;
 }
 
-Vector3 operator*(float b, Vector3& a) {
+Vector3 operator*(float b, Vector3 a) {
 	return a * b;
 }
 
-Vector3 operator*(glm::mat3 m, Vector3& v) {
+Vector3 operator*(glm::mat3 m, Vector3 v) {
 	glm::vec3 res = m * v.GetGLMValue();
 	return Vector3(res.x, res.y, res.z);
 }
 
-Vector3 operator+(float b, Vector3& a) {
+Vector3 operator+(float b, Vector3 a) {
 	return a + b;
 }
 
-Vector3 operator-(float b, Vector3& a) {
+Vector3 operator-(float b, Vector3 a) {
 	return -1.0f * (a - b);
 }
 
-Vector3 operator/(float b, Vector3& a) {
+Vector3 operator/(float b, Vector3 a) {
 	return Vector3(b / a.x(), b / a.y(), b / a.z());
 }
 
