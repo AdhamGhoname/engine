@@ -20,14 +20,19 @@ private:
     unordered_map < type_index, vector<Component*> > components_;
     std::string name_;
 public:
-    Object();
-    Object(Vector3 position);
-    Object(Vector3 position, Quaternion rotation);
-    Object(Vector3 position, Quaternion rotation, Vector3 scale);
+    Object(Scene* scene);
+    Object(Scene* scene, Object* object);
+    Object(Scene* scene, Vector3 position);
+    Object(Scene* scene, Vector3 position, Quaternion rotation);
+    Object(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale);
     ~Object();
+
+    Transform* GetTransform();
+    Scene* GetScene();
 
     std::string GetName();
     void SetActive(bool state);
+    bool IsActive();
     template<typename T> T AddComponent();
     template<typename T> T GetComponent();
     template<typename T> T GetComponentInChildren();

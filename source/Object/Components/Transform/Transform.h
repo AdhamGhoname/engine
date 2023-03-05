@@ -1,11 +1,10 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
-#include "../../Component.h"
+#include "../../../Object/ObjectCommons.h"
 #include "../../../Math/MathCommons.h"
 
 using namespace std;
-class Object;
 
 class Transform {
 private:
@@ -21,9 +20,7 @@ private:
     unsigned int siblingIndex_;
     glm::mat4 localToWorldMatrix_;
     glm::mat4 worldToLocalMatrix_;
-    glm::mat4 localToWorldMatrixScaled_;
-    glm::mat4 worldToLocalMatrixScaled_;
-    
+
     void RecomputeTransform();
     void RecomputeLocalTransform();
     static void RecomputeSubtree(Transform* root);
@@ -36,6 +33,7 @@ public:
     Transform(Object* object, Transform* parent, Vector3 position);
     Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation);
     Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale);
+    ~Transform();
 
     // getters and setters
     Transform* GetParent();
@@ -82,4 +80,5 @@ public:
     void SetAsLastSibling();
     void SetSiblingIndex(unsigned int index);
     void Translate(Vector3 delta);
+    void TranslateLocal(Vector3 delta);
 };

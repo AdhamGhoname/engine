@@ -4,7 +4,7 @@
 Transform::Transform(Object* object) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = object->GetScene()->GetRootTransform();
 	localPosition_ = Vector3::Zero();
 	localRotation_ = Quaternion::Identity();
 	localScale_ = Vector3::One();
@@ -20,7 +20,7 @@ Transform::Transform(Object* object) {
 Transform::Transform(Object* object, Vector3 position) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = object->GetScene()->GetRootTransform();
 	localPosition_ = position;
 	localRotation_ = Quaternion::Identity();
 	localScale_ = Vector3::One();
@@ -37,7 +37,7 @@ Transform::Transform(Object* object, Vector3 position) {
 Transform::Transform(Object* object, Vector3 position, Quaternion rotation) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = object->GetScene()->GetRootTransform();
 	localPosition_ = position;
 	localRotation_ = rotation;
 	localScale_ = Vector3::One();
@@ -55,7 +55,7 @@ Transform::Transform(Object* object, Vector3 position, Quaternion rotation) {
 Transform::Transform(Object* object, Vector3 position, Quaternion rotation, Vector3 scale) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = object->GetScene()->GetRootTransform();
 	localPosition_ = position;
 	localRotation_ = rotation;
 	localScale_ = scale;
@@ -87,7 +87,7 @@ Transform::Transform(Object* object, Transform* parent) {
 Transform::Transform(Object* object, Transform* parent, Vector3 position) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = parent;
 	localPosition_ = position;
 	localRotation_ = Quaternion::Identity();
 	localScale_ = Vector3::One();
@@ -98,7 +98,7 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position) {
 Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = parent;
 	localPosition_ = position;
 	localRotation_ = rotation;
 	localScale_ = Vector3::One();
@@ -109,13 +109,18 @@ Transform::Transform(Object* object, Transform* parent, Vector3 position, Quater
 Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale) {
 	assert(object != NULL);
 	object_ = object;
-	parent_ = NULL;
+	parent_ = parent;
 	localPosition_ = position;
 	localRotation_ = rotation;
 	localScale_ = scale;
 
 	SetParent(parent);
 	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
+}
+
+Transform::~Transform() {
+	SetParent(NULL);
+	DetachChildren();
 }
 
 void Transform::RecomputeTransform() {
@@ -191,7 +196,7 @@ unsigned int Transform::GetChildCount() {
 }
 
 Transform* Transform::GetChild(unsigned int index) {
-	assert(index <= children_.size());
+	assert(index < children_.size());
     return children_[index];
 }
 
@@ -280,7 +285,7 @@ glm::mat4 Transform::GetWorldToLocalMatrix() {
 
 void Transform::DetachChildren() {
     for (int i = 0; i < GetChildCount(); i++) {
-        GetChild(i)->SetParent(NULL);
+        GetChild(i)->SetParent(object_->GetScene()->GetRootTransform());
     }
 }
 
@@ -332,4 +337,48 @@ void Transform::Rotate(Vector3 euler) {
 
 void Transform::Rotate(float x, float y, float z) {
     Rotate(Vector3(x, y, z));
+}
+
+void Transform::RotateAround(Vector3 point, Vector3 axis, float angle) {
+	Object* temp = new Object(object_->GetScene(), point);
+	Transform* parent = parent_;
+	SetParent(temp->GetTransform());
+	temp->GetTransform()->SetRotation(Quaternion::AngleAxis(angle, axis));
+	SetParent(parent);
+	delete temp;
+}
+
+void Transform::SetAsFirstSibling() {
+	for (int i = 0; i < siblingIndex_; i++) {
+		unsigned int siblingIndex = parent_->GetChild(i)->GetSiblingIndex();
+		parent_->GetChild(i)->siblingIndex_ = siblingIndex + 1;
+	}
+	parent_->children_.erase(parent_->children_.begin() + siblingIndex_);
+	parent_->children_.insert(parent_->children_.begin(), this);
+}
+
+void Transform::SetAsLastSibling() {
+	for (int i = siblingIndex_ + 1; i < parent_->GetChildCount(); i++) {
+		unsigned int siblingIndex = parent_->GetChild(i)->GetSiblingIndex();
+		parent_->GetChild(i)->siblingIndex_ = siblingIndex - 1;
+	}
+	parent_->children_.erase(parent_->children_.begin() + siblingIndex_);
+	parent_->children_.insert(parent_->children_.end(), this);
+}
+
+void Transform::SetSiblingIndex(unsigned int index) {
+	assert(index < parent_->GetChildCount());
+	parent_->children_.erase(parent_->children_.begin() + siblingIndex_);
+	parent_->children_.insert(parent_->children_.begin() + index, this);
+	for (int i = 0; i < parent_->GetChildCount(); i++) {
+		parent_->GetChild(i)->siblingIndex_ = i;
+	}
+}
+
+void Transform::Translate(Vector3 delta) {
+	SetPosition(position_ + delta);
+}
+
+void Transform::TranslateLocal(Vector3 delta) {
+	SetLocalPosition(localPosition_ + delta);
 }
