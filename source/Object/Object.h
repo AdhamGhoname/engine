@@ -2,14 +2,14 @@
 #include <string>
 #include <vector>
 #include "../Math/MathCommons.h"
-#include "../Scene/Scene.h"
+#include "../Math/Vector3.h"
+#include "../Math/Quaternion.h"
 #include "ObjectCommons.h"
+#include "../Scene/Scene.h"
 #include <typeinfo>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-
-using namespace std;
 
 class Object {
 private:
@@ -17,8 +17,13 @@ private:
     bool activeInHierarchy_;
     bool activeSelf_;
     Scene* scene_;
-    unordered_map < type_index, vector<Component*> > components_;
+    std::unordered_map < std::type_index, std::vector<Component*> > components_;
     std::string name_;
+    void init(Scene* scene);
+    void init(Scene* scene, Object* object);
+    void init(Scene* scene, Vector3 position);
+    void init(Scene* scene, Vector3 position, Quaternion rotation);
+    void init(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale);
 public:
     Object(Scene* scene);
     Object(Scene* scene, Object* object);
@@ -31,14 +36,17 @@ public:
     Scene* GetScene();
 
     std::string GetName();
+    void SetName(std::string name);
     void SetActive(bool state);
     bool IsActive();
-    template<typename T> T AddComponent();
-    template<typename T> T GetComponent();
-    template<typename T> T GetComponentInChildren();
-    template<typename T> T GetComponentInParent();
-    template<typename T> T GetComponents();
-    template<typename T> T GetComponentsInChildren();
-    template<typename T> T GetComponentsInParent();
+    template<typename T> T* AddComponent();
+    template<typename T> void RemoveComponent();
+    template<typename T> void RemoveComponent(Component* c);
+    template<typename T> T* GetComponent();
+    template<typename T> T* GetComponentInChildren();
+    template<typename T> T* GetComponentInParent();
+    template<typename T> std::vector<T*> GetComponents();
+    template<typename T> std::vector<T*> GetComponentsInChildren();
+    template<typename T> std::vector<T*> GetComponentsInParent();
     static void Destory(Component c);
 };

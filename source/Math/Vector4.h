@@ -2,6 +2,8 @@
 #include <glm/glm.hpp>
 #include <string>
 #include "MathCommons.h"
+#include "Quaternion.h"
+#include "Vector3.h"
 
 struct Vector4 {
 private:

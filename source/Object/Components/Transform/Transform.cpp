@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "../../Object.h"
 #include <assert.h>
 
 Transform::Transform(Object* object) {

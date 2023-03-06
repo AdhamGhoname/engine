@@ -1,6 +1,9 @@
 #pragma once
 #include <glm/gtx/quaternion.hpp>
 #include "MathCommons.h"
+#include "Vector4.h"
+#include "Vector3.h"
+#include <string>
 
 struct Quaternion {
 private:

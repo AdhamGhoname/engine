@@ -2,6 +2,9 @@
 #include <glm/glm.hpp>
 #include <string>
 #include "MathCommons.h"
+#include "Vector2.h"
+#include "Vector4.h"
+
 
 struct Vector3 {
 private:

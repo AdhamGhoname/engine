@@ -2,14 +2,17 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "../../../Object/ObjectCommons.h"
+#include "../../Component.h"
 #include "../../../Math/MathCommons.h"
+#include "../../../Math/Vector3.h"
+#include "../../../Math/Quaternion.h"
+
 
 using namespace std;
 
-class Transform {
+class Transform : public Component {
 private:
 	Transform* parent_;
-    Object* object_;
 	vector<Transform*> children_;
     Vector3 localPosition_;
     Quaternion localRotation_;
