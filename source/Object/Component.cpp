@@ -6,32 +6,32 @@ std::string Component::GetName() {
 }
 
 template <typename T>
-T Component::GetComponent() {
+T* Component::GetComponent() {
     return object_->GetComponent<T>();
 }
 
 template <typename T>
-T Component::GetComponentInChildren() {
+T* Component::GetComponentInChildren() {
     return object_->GetComponentInChildren<T>();
 }
 
 template <typename T>
-T Component::GetComponentInParent() {
+T* Component::GetComponentInParent() {
     return object_->GetComponentInParent<T>();
 }
 
 template <typename T>
-T Component::GetComponents() {
+T* Component::GetComponents() {
     return object_->GetComponents<T>();
 }
 
 template <typename T>
-T Component::GetComponentsInChildren() {
+T* Component::GetComponentsInChildren() {
     return object_->GetComponentsInChildren<T>();
 }
 
 template <typename T>
-T Component::GetComponentsInParent() {
+T* Component::GetComponentsInParent() {
     return object_->GetComponentsInParent<T>();
 }
 

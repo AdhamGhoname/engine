@@ -19,7 +19,7 @@ private:
     void processNode(aiNode* currentNode, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
     vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, string typeName);
-    unsigned int TextureFromFile(string directory, string filename);
+    unsigned int TextureFromFile(string directory, string filename, string typeName);
     unordered_map<string, unsigned int> textures;
 public:
     Model(const char* path);

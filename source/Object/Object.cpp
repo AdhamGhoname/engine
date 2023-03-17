@@ -24,7 +24,7 @@ void Object::init(Scene* scene, Vector3 position, Quaternion rotation) {
 }
 
 void Object::init(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale) {
-    transform_ = new Transform(this, position, rotation, scale);
+    transform_ = new Transform(this, scene->GetRootTransform(), position, rotation, scale);
     scene_ = scene;
     activeInHierarchy_ = activeSelf_ = true;
     components_[typeid(Transform)].push_back(transform_);
@@ -48,6 +48,16 @@ Object::Object(Scene* scene, Vector3 position, Quaternion rotation) {
 
 Object::Object(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scale) {
     init(scene, position, rotation, scale);
+}
+
+Object::~Object() {
+    delete transform_;
+    for (auto it : components_) {
+        for (auto comp : it.second) {
+            delete comp;
+        }
+    }
+    components_.clear();
 }
 
 Transform* Object::GetTransform() {
@@ -102,7 +112,7 @@ template <typename T>
 T* Object::GetComponentInChildren() {
     static_assert(std::is_base_of<Component, T>::value, "Not a component");
     
-    T* comp = GetComponent<T>();
+    T* comp = this->GetComponent<T>();
     if (comp != NULL) {        
         return comp;
     }
@@ -115,4 +125,50 @@ T* Object::GetComponentInChildren() {
         }
     }
     return NULL;
+}
+
+template <typename T>
+T* Object::GetComponentInParent() {
+    static_assert(std::is_base_of<Component, T>::value, "Not a component");
+
+    T* comp = this->GetComponent<T>();
+    if (comp != NULL) {
+        return comp;
+    }
+
+    if (transform_->HasParent()) {
+        comp = transform_->GetParent()->GetComponentInParent<T>();
+    }
+    return comp;
+}
+
+template <typename T>
+std::vector<T*> Object::GetComponents() {
+    static_assert(std::is_base_of<Component, T>::value, "Not a component");
+
+    return std::vector<T*>(components_[typeid(T)].begin(), components_[typeid(T)].end());
+}
+
+template <typename T>
+std::vector<T*> Object::GetComponentsInChildren() {
+    static_assert(std::is_base_of<Component, T>::value, "Not a component");
+
+    std::vector<T*> result(components_[typeid(T)].begin(), components_[typeid(T)].end());
+    for (int i = 0; i < transform_->GetChildCount(); i++) {
+        std::vector<T*> comps = transform_->GetChild(i)->GetComponentsInChildren<T>();
+        result.insert(result.end(), comps.begin(), comps.end());
+    }
+    return result;
+}
+
+template <typename T>
+std::vector<T*> Object::GetComponentsInParent() {
+    static_assert(std::is_base_of<Component, T>::value, "Not a component");
+
+    std::vector<T*> result = this->GetComponents<T>();
+    if (transform_->HasParent()) {
+        std::vector<T*> comps = transform_->GetParent()->GetComponentsInParent<T>();
+        result.insert(result.end(), comps.begin(), comps.end());
+    }
+    return result;
 }

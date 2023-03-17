@@ -191,7 +191,8 @@ void init()
 //
 	glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	lastTime = glfwGetTime();
 }
 
@@ -222,9 +223,9 @@ void render()
     for (int i = 0; i < 8; i++) {
         string prefix = "pointLights[" + to_string(i) + "]";
         standardShader.setUniform(prefix + ".position", lightPositions[i]);
-        standardShader.setUniform(prefix + ".ambient", glm::vec3(0.2f));
-        standardShader.setUniform(prefix + ".diffuse", glm::vec3(0.5f)); // darkened
-        standardShader.setUniform(prefix + ".specular", glm::vec3(1.0f));
+        standardShader.setUniform(prefix + ".ambient", glm::vec3(0.1f));
+        standardShader.setUniform(prefix + ".diffuse", glm::vec3(0.3f)); // darkened
+        standardShader.setUniform(prefix + ".specular", glm::vec3(0.5f));
         standardShader.setUniform(prefix + ".attenuation", glm::vec3(1.0f, 0.09f, 0.032f));
     }
 
@@ -296,7 +297,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render();

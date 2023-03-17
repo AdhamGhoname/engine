@@ -8,6 +8,7 @@ in vec2 uv;
 in vec3 normal;
 in vec3 vertPosition;
 in mat3 normal_mat;
+in mat3 TBN;
 
 struct Material {
     sampler2D diffuse[MAX_TEXTURES_COUNT];
@@ -78,7 +79,9 @@ vec3 sample_specular() {
 }
 
 vec3 sample_normal() {
-    vec3 normal = normalize(normal_mat * vec3(texture(material.normal, uv)));
+    vec3 normal = texture(material.normal, uv).rgb;
+    normal = normal * 2.0f - 1.0f;
+    normal = normalize(TBN * normal);
     //vec3 normal = normalize(vec3(texture(material.normal, uv)));
     return normal;
 }
@@ -180,5 +183,6 @@ void main()
 //        color = vec3(0.1f);
 //    }
     
+//    color = pow(color, vec3(1.0f / 2.2f));
 	FragColor = vec4(color, 1.0);
 }

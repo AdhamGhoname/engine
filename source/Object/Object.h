@@ -48,5 +48,4 @@ public:
     template<typename T> std::vector<T*> GetComponents();
     template<typename T> std::vector<T*> GetComponentsInChildren();
     template<typename T> std::vector<T*> GetComponentsInParent();
-    static void Destory(Component c);
 };

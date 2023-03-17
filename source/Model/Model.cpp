@@ -17,7 +17,11 @@ void Model::render(Shader& shader) {
 
 void Model::loadModel(string path) {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+    unsigned int postprocess_options = aiProcess_Triangulate |
+        aiProcess_FlipUVs |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_CalcTangentSpace;
+    const aiScene* scene = importer.ReadFile(path, postprocess_options);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
         return;
@@ -48,6 +52,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         Vertex vertex;
         vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
         vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+        vertex.Tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
         if (mesh->mTextureCoords[0]) {
             vertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
         }
@@ -83,14 +88,14 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTextureType 
         aiString filename;
         material->GetTexture(type, i, &filename);
         Texture texture;
-        texture.id = TextureFromFile(directory, filename.C_Str());
+        texture.id = TextureFromFile(directory, filename.C_Str(), typeName);
         texture.type = typeName;
         textures.push_back(texture);
     }
     return textures;
 }
 
-unsigned int Model::TextureFromFile(string directory, string filename) {
+unsigned int Model::TextureFromFile(string directory, string filename, string typeName) {
     string fullpath = (fs::path(directory) / fs::path(filename)).generic_string();
     
     if (textures.count(fullpath)) {
@@ -109,8 +114,10 @@ unsigned int Model::TextureFromFile(string directory, string filename) {
     unsigned char* data = stbi_load(fullpath.c_str(), &width, &height, &channels, 0);
     if (data)
     {
-        int format = channels == 3 ? GL_RGB : GL_RGBA;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
+        int format = channels == 3 ? 
+            (typeName == "diffuse" ? GL_SRGB : GL_RGB) : 
+            (typeName == "diffuse" ? GL_SRGB_ALPHA : GL_RGBA);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGB,
             GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }

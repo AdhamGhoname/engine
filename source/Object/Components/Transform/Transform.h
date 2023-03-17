@@ -5,6 +5,7 @@
 #include "../../Component.h"
 #include "../../../Math/MathCommons.h"
 #include "../../../Math/Vector3.h"
+#include "../../../Math/Vector4.h"
 #include "../../../Math/Quaternion.h"
 
 
