@@ -1,122 +1,81 @@
 #include "Transform.h"
 #include "../../Object.h"
+#include "../../../Scene/Scene.h"
 #include <assert.h>
 
-Transform::Transform(Object* object) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = object->GetScene()->GetRootTransform();
-	localPosition_ = Vector3::Zero();
-	localRotation_ = Quaternion::Identity();
-	localScale_ = Vector3::One();
+Transform::Transform(Object* object) : Component(object) {
+	init(object);
+}
 
-	position_ = localPosition_;
-	rotation_ = localRotation_;
-	scale_ = localScale_;
-	siblingIndex_ = 0;
+Transform::Transform(Object* object, Vector3 position) : Component(object) {
+	init(object, position);
+}
+
+Transform::Transform(Object* object, Vector3 position, Quaternion rotation) : Component(object) {
+	init(object, position, rotation);
+}
+
+Transform::Transform(Object* object, Vector3 position, Quaternion rotation, Vector3 scale) : Component(object) {
+	init(object, position, rotation, scale);
+}
+
+Transform::Transform(Object* object, Transform* parent) : Component(object) {
+	init(object, parent);
+}
+
+Transform::Transform(Object* object, Transform* parent, Vector3 position) : Component(object) {
+	init(object, parent, position);
+}
+
+Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation) : Component(object) {
+	init(object, parent, position, rotation);
+}
+
+Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale) : Component(object) {
+	init(object, parent, position, rotation, scale);
+}
+
+void Transform::init(Object* object) {
+	init(object, object->GetScene()->GetRootTransform(), Vector3::Zero(), Quaternion::Identity(), Vector3::One());
+}
+
+void Transform::init(Object* object, Vector3 position) {
+	init(object, object->GetScene()->GetRootTransform(), position, Quaternion::Identity(), Vector3::One());
+}
+
+void Transform::init(Object* object, Vector3 position, Quaternion rotation) {
+	init(object, object->GetScene()->GetRootTransform(), position, rotation, Vector3::One());
+}
+
+void Transform::init(Object* object, Vector3 position, Quaternion rotation, Vector3 scale) {
+	init(object, object->GetScene()->GetRootTransform(), position, rotation, scale);
+}
+
+void Transform::init(Object* object, Transform* parent) {
+	init(object, parent, Vector3::Zero(), Quaternion::Identity(), Vector3::One());
+}
+
+void Transform::init(Object* object, Transform* parent, Vector3 position) {
+	init(object, parent, position, Quaternion::Identity(), Vector3::One());
+}
+
+void Transform::init(Object* object, Transform* parent, Vector3 position, Quaternion rotation) {
+	init(object, parent, position, rotation, Vector3::One());
+}
+
+void Transform::init(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale) {
+	assert(object != NULL);
+	position_ = position;
+	rotation_ = rotation;
+	scale_ = scale;
+
 	localToWorldMatrix_ = glm::mat4(1.0f);
 	worldToLocalMatrix_ = glm::mat4(1.0f);
-}
 
-Transform::Transform(Object* object, Vector3 position) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = object->GetScene()->GetRootTransform();
-	localPosition_ = position;
-	localRotation_ = Quaternion::Identity();
-	localScale_ = Vector3::One();
+	parent_ = NULL;
 
-	position_ = localPosition_;
-	rotation_ = localRotation_;
-	scale_ = localScale_;
-	siblingIndex_ = 0;
-	localToWorldMatrix_ = glm::mat4(1.0f);
-	localToWorldMatrix_ = glm::translate(localToWorldMatrix_, position.GetGLMValue());
-	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-}
-
-Transform::Transform(Object* object, Vector3 position, Quaternion rotation) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = object->GetScene()->GetRootTransform();
-	localPosition_ = position;
-	localRotation_ = rotation;
-	localScale_ = Vector3::One();
-
-	position_ = localPosition_;
-	rotation_ = localRotation_;
-	scale_ = localScale_;
-	siblingIndex_ = 0;
-	localToWorldMatrix_ = glm::translate(glm::mat4(1.0f), position.GetGLMValue()) * 
-						rotation.GetTransformationMatrix();
-
-	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-}
-
-Transform::Transform(Object* object, Vector3 position, Quaternion rotation, Vector3 scale) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = object->GetScene()->GetRootTransform();
-	localPosition_ = position;
-	localRotation_ = rotation;
-	localScale_ = scale;
-
-	position_ = localPosition_;
-	rotation_ = localRotation_;
-	scale_ = localScale_;
-	siblingIndex_ = 0;
-	localToWorldMatrix_ = glm::translate(glm::mat4(1.0f), position.GetGLMValue()) *
-		rotation.GetTransformationMatrix() *
-		glm::scale(glm::mat4(1.0f), scale.GetGLMValue());
-
-	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
-}
-
-Transform::Transform(Object* object, Transform* parent) {
-	assert(object != NULL);
-	assert(parent != NULL);
-
-	object_ = object;
-	parent_ = parent;
-	localPosition_ = Vector3::Zero();
-	localRotation_ = Quaternion::Identity();
-	localScale_ = Vector3::One();
-
+	RecomputeLocalTransform();
 	SetParent(parent);
-}
-
-Transform::Transform(Object* object, Transform* parent, Vector3 position) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = parent;
-	localPosition_ = position;
-	localRotation_ = Quaternion::Identity();
-	localScale_ = Vector3::One();
-
-	SetParent(parent);
-}
-
-Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = parent;
-	localPosition_ = position;
-	localRotation_ = rotation;
-	localScale_ = Vector3::One();
-
-	SetParent(parent);
-}
-
-Transform::Transform(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale) {
-	assert(object != NULL);
-	object_ = object;
-	parent_ = parent;
-	localPosition_ = position;
-	localRotation_ = rotation;
-	localScale_ = scale;
-
-	SetParent(parent);
-	worldToLocalMatrix_ = glm::inverse(localToWorldMatrix_);
 }
 
 Transform::~Transform() {
@@ -166,7 +125,7 @@ Transform* Transform::GetParent() {
 }
 
 void Transform::SetParent(Transform* parent) {
-    if (IsChildOf(parent)) {
+    if (parent != NULL && IsChildOf(parent)) {
         return;
     }
     
@@ -174,7 +133,7 @@ void Transform::SetParent(Transform* parent) {
         for (int i = siblingIndex_+1; i < parent_->GetChildCount(); i++) {
             parent_->children_[i]->siblingIndex_--;
         }
-        parent->children_.erase(parent_->children_.begin() + siblingIndex_);
+        parent_->children_.erase(parent_->children_.begin() + siblingIndex_);
     }
     
     parent_ = parent;
@@ -345,7 +304,7 @@ void Transform::RotateAround(Vector3 point, Vector3 axis, float angle) {
 	Transform* parent = parent_;
 	SetParent(temp->GetTransform());
 	temp->GetTransform()->SetRotation(Quaternion::AngleAxis(angle, axis));
-	SetParent(parent);
+	parent_ = NULL;SetParent(parent);
 	delete temp;
 }
 

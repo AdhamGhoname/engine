@@ -1,4 +1,7 @@
 #include "Shader.h"
+#include "../Math/Vector2.h"
+#include "../Math/Vector3.h"
+#include "../Math/Vector4.h"
 #include <iostream>
 using namespace std;
 
@@ -124,4 +127,28 @@ void Shader::setUniform(const string& name, glm::vec3 value) const
 void Shader::setUniform(const string& name, glm::vec4 value) const
 {
     glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
+}
+
+void Shader::setUniform(const string& name, Vector2 value) const
+{
+	setUniform(name, value.GetGLMValue());
+}
+
+void Shader::setUniform(const string& name, Vector3 value) const
+{
+	setUniform(name, value.GetGLMValue());
+}
+
+void Shader::setUniform(const string& name, Vector4 value) const
+{
+	setUniform(name, value.GetGLMValue());
+}
+
+Shader* Shader::StandardShader() {
+	string key = STANDARD_SHADER_PATH;
+	if (predefined_shaders.count(key) != 0) {
+		return predefined_shaders[key];
+	}
+	return Shader::predefined_shaders[key] = new Shader((key + VERTEX_SHADER_EXTENSION).c_str(),
+												(key + FRAGMENT_SHADER_EXTENSION).c_str());
 }

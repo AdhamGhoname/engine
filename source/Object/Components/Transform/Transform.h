@@ -25,8 +25,17 @@ private:
     glm::mat4 localToWorldMatrix_;
     glm::mat4 worldToLocalMatrix_;
 
+    void init(Object* object);
+    void init(Object* object, Vector3 position);
+    void init(Object* object, Vector3 position, Quaternion rotation);
+    void init(Object* object, Vector3 position, Quaternion rotation, Vector3 scale);
+    void init(Object* object, Transform* parent);
+    void init(Object* object, Transform* parent, Vector3 position);
+    void init(Object* object, Transform* parent, Vector3 position, Quaternion rotation);
+    void init(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale);
     void RecomputeTransform();
     void RecomputeLocalTransform();
+
     static void RecomputeSubtree(Transform* root);
 public:
     Transform(Object* object);

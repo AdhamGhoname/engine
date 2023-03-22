@@ -41,8 +41,6 @@ void Model::processNode(aiNode *currentNode, const aiScene *scene) {
     }
 }
 
-
-
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
