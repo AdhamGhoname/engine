@@ -15,6 +15,7 @@ private:
 	float lastFrameTime_;
 	float deltaTime_;
 	GLFWwindow* activeWindow_;
+	Vector3 clearColor_;
 	void ProcessInput();
 	void Render();
 	void OnMouseMove(GLFWwindow* window, double x, double y);
@@ -29,6 +30,7 @@ public:
 	float GetDeltaTime();
 	int GetWindowWidth();
 	int GetWindowHeight();
+	void SetClearColor(Vector3 color);
 
 	static Engine* GetInstance();
 };

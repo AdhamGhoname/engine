@@ -94,7 +94,7 @@ void Vector4::SetW(float w) {
 std::string Vector4::ToString() {
 	std::stringstream ss;
 	ss << std::fixed << std::setprecision(2);
-	ss << "(" << value_.x << ", " << value_.y << ", " << value_.z << ")";
+	ss << "(" << value_.x << ", " << value_.y << ", " << value_.z << ", " << value_.w << ")";
 	return ss.str();
 }
 

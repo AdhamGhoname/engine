@@ -5,7 +5,7 @@
 #include "ObjectCommons.h"
 #include <typeinfo>
 #include <typeindex>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 class Object {
@@ -14,7 +14,7 @@ protected:
     bool activeInHierarchy_;
     bool activeSelf_;
     Scene* scene_;
-    std::unordered_map < std::type_index, std::vector<Component*> > components_;
+    std::map < std::type_index, std::vector<Component*> > components_;
     std::string name_;
     void init(Scene* scene);
     void init(Scene* scene, Object* object);

@@ -83,7 +83,7 @@ void Engine::Run() {
 	while (!glfwWindowShouldClose(activeWindow_))
 	{
 		ProcessInput();
-		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+		glClearColor(clearColor_.x(), clearColor_.y(), clearColor_.z(), 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		Render();
@@ -179,6 +179,10 @@ int Engine::GetWindowWidth() {
 
 int Engine::GetWindowHeight() {
 	return windowHeight_;
+}
+
+void Engine::SetClearColor(Vector3 color) {
+	clearColor_ = color;
 }
 
 Engine::~Engine() {

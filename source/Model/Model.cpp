@@ -86,19 +86,22 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTextureType 
         aiString filename;
         material->GetTexture(type, i, &filename);
         Texture texture;
-        texture.id = TextureFromFile(directory, filename.C_Str(), typeName);
+        string fullpath = (fs::path(directory) / fs::path(filename.C_Str())).generic_string();
+        if (this->textures.count(fullpath)) {
+            texture.id = this->textures.at(fullpath);
+
+        }
+        else {
+            texture.id = TextureFromFile(fullpath, typeName);
+            this->textures[fullpath] = texture.id;
+        }
         texture.type = typeName;
         textures.push_back(texture);
     }
     return textures;
 }
 
-unsigned int Model::TextureFromFile(string directory, string filename, string typeName) {
-    string fullpath = (fs::path(directory) / fs::path(filename)).generic_string();
-    
-    if (textures.count(fullpath)) {
-        return textures[fullpath];
-    }
+unsigned int Model::TextureFromFile(string fullpath, string typeName) {   
     unsigned int textureID;
     glGenTextures(1, &textureID);
     glActiveTexture(GL_TEXTURE0);
@@ -107,24 +110,22 @@ unsigned int Model::TextureFromFile(string directory, string filename, string ty
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    stbi_set_flip_vertically_on_load(true);
+    //stbi_set_flip_vertically_on_load(true);
     int width, height, channels;
     unsigned char* data = stbi_load(fullpath.c_str(), &width, &height, &channels, 0);
     if (data)
     {
         int format = channels == 3 ? 
-            (typeName == "diffuse" ? GL_SRGB : GL_RGB) : 
-            (typeName == "diffuse" ? GL_SRGB_ALPHA : GL_RGBA);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGB,
-            GL_UNSIGNED_BYTE, data);
+            (typeName == "diffuse1" ? GL_RGBA : GL_RGB) : 
+            (typeName == "diffuse1" ? GL_RGBA : GL_RGBA);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
-        cout << "Couldn't load texture image." << endl;
+        cout << "Couldn't load texture image: " << fullpath << endl;
     }
     stbi_image_free(data);
     glBindTexture(GL_TEXTURE_2D, 0);
-    textures[fullpath] = textureID;
     return textureID;
 }

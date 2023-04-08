@@ -85,6 +85,7 @@ vec3 sample_normal() {
     //vec3 normal = normalize(vec3(texture(material.normal, uv)));
     return normal;
 }
+
 vec3 dirLighting(DirectionalLight light) {
     vec3 direction = normalize(-light.direction);
     

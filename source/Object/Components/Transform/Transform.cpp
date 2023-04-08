@@ -79,17 +79,18 @@ void Transform::init(Object* object, Transform* parent, Vector3 position, Quater
 }
 
 Transform::~Transform() {
-	SetParent(NULL);
 	DetachChildren();
+	SetParent(NULL);
 }
 
 void Transform::RecomputeTransform() {
 	glm::mat4 parentLToW = HasParent() ? parent_->GetLocalToWorldMatrix() : glm::mat4(1.0f);
 	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
+	Vector3 parentScale = HasParent() ? parent_->GetScale() : Vector3::One();
 
 	position_ = parentLToW * Vector4(localPosition_, 1.0f);
 	rotation_ = localRotation_ * parentRot;
-	scale_ = parentLToW * Vector4(localScale_, 0.0f);
+	scale_ = parentScale * localScale_;
 	localToWorldMatrix_ =
 		parentLToW *
 		glm::translate(glm::mat4(1.0f), localPosition_.GetGLMValue()) *
@@ -101,10 +102,12 @@ void Transform::RecomputeTransform() {
 void Transform::RecomputeLocalTransform() {
 	glm::mat4 parentWToL = HasParent() ? parent_->GetWorldToLocalMatrix() : glm::mat4(1.0f);
 	glm::mat4 parentLToW = HasParent() ? parent_->GetLocalToWorldMatrix() : glm::mat4(1.0f);
-	localPosition_ = parentWToL * Vector4(position_, 1.0f);
 	Quaternion parentRot = HasParent() ? parent_->GetRotation() : Quaternion::Identity();
+	Vector3 parentScale = HasParent() ? parent_->GetScale() : Vector3::One();
+
+	localPosition_ = parentWToL * Vector4(position_, 1.0f);
 	localRotation_ = rotation_ * Quaternion::Inverse(parentRot);
-	localScale_ = parentWToL * Vector4(scale_, 0.0f);
+	localScale_ = (1.0f / parentScale) * scale_;
 	localToWorldMatrix_ =
 		parentLToW *
 		glm::translate(glm::mat4(1.0f), localPosition_.GetGLMValue()) *
@@ -245,7 +248,7 @@ glm::mat4 Transform::GetWorldToLocalMatrix() {
 
 void Transform::DetachChildren() {
     for (int i = 0; i < GetChildCount(); i++) {
-        GetChild(i)->SetParent(object_->GetScene()->GetRootTransform());
+        GetChild(i)->SetParent(parent_);
     }
 }
 
@@ -304,8 +307,7 @@ void Transform::RotateAround(Vector3 point, Vector3 axis, float angle) {
 	Transform* parent = parent_;
 	SetParent(temp->GetTransform());
 	temp->GetTransform()->SetRotation(Quaternion::AngleAxis(angle, axis));
-	parent_ = NULL;SetParent(parent);
-	delete temp;
+	SetParent(parent);
 }
 
 void Transform::SetAsFirstSibling() {

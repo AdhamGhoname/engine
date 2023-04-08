@@ -69,6 +69,7 @@ public:
     Vector3 operator+(float other);
     Vector3 operator+=(Vector3 other);
     Vector3 operator*(float c);
+    Vector3 operator*(Vector3 c);
     Vector3 operator*=(float c);
     Vector3 operator/(float c);
     Vector3 operator/=(float c);

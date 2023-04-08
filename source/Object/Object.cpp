@@ -54,13 +54,16 @@ Object::Object(Scene* scene, Vector3 position, Quaternion rotation, Vector3 scal
 }
 
 Object::~Object() {
-    delete transform_;
+    std::vector<Component*> to_be_deleted;
     for (auto it : components_) {
         for (auto comp : it.second) {
-            delete comp;
+            to_be_deleted.push_back(comp);
         }
     }
     components_.clear();
+    for (auto comp : to_be_deleted) {
+        delete comp;
+    }
 }
 
 Transform* Object::GetTransform() {

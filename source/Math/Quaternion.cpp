@@ -1,11 +1,11 @@
 #include "Quaternion.h"
 
 Quaternion::Quaternion() {
-    value_ = glm::quat(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+    value_ = glm::quat();
 }
 
 Quaternion::Quaternion(float x, float y, float z, float w) {
-    value_ = glm::quat(glm::vec4(x, y, z, w));
+    value_ = glm::quat(w, x, y, z);
 }
 
 Quaternion::Quaternion(glm::quat value) {
@@ -17,11 +17,11 @@ Quaternion::Quaternion(Vector4 v) {
 }
 
 Quaternion Quaternion::Euler(float x, float y, float z) {
-    return Quaternion(glm::quat(glm::vec3(x, y, z)));
+    return Quaternion(glm::quat(glm::radians(glm::vec3(x, y, z))));
 }
 
 glm::mat4 Quaternion::GetTransformationMatrix() {
-    return glm::mat4_cast(value_);
+    return glm::toMat4(value_);
 }
 
 Quaternion Quaternion::Normalized() {
@@ -101,11 +101,11 @@ bool Quaternion::operator!=(Quaternion other) {
 }
 
 Quaternion Quaternion::Euler(Vector3 euler) {
-    return Quaternion(glm::quat(euler.GetGLMValue()));
+    return Quaternion(glm::quat(glm::radians(euler.GetGLMValue())));
 }
 
 Quaternion Quaternion::AngleAxis(float angle, Vector3 axis) {
-    return Quaternion(glm::angleAxis(angle, axis.GetGLMValue()));
+    return Quaternion(glm::angleAxis(glm::radians(angle), axis.GetGLMValue()));
 }
 
 float Quaternion::Dot(Quaternion a, Quaternion b) {

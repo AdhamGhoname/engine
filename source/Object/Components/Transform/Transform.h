@@ -33,10 +33,10 @@ private:
     void init(Object* object, Transform* parent, Vector3 position);
     void init(Object* object, Transform* parent, Vector3 position, Quaternion rotation);
     void init(Object* object, Transform* parent, Vector3 position, Quaternion rotation, Vector3 scale);
-    void RecomputeTransform();
-    void RecomputeLocalTransform();
 
     static void RecomputeSubtree(Transform* root);
+    void RecomputeTransform();
+    void RecomputeLocalTransform();
 public:
     Transform(Object* object);
     Transform(Object* object, Vector3 position);

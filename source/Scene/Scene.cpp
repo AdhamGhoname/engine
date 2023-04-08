@@ -8,6 +8,8 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <iostream>
+#include "../Engine/Engine.h"
+#include <iostream>
 
 Scene::Scene() {
     sceneRoot_ = new Object((Scene*)NULL);

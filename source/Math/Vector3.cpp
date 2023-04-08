@@ -169,6 +169,12 @@ Vector3 Vector3::operator*(float other) {
 		this->z() * other);
 }
 
+Vector3 Vector3::operator*(Vector3 other) {
+	return Vector3(this->x() * other.x(),
+		this->y() * other.y(),
+		this->z() * other.z());
+}
+
 Vector3 Vector3::operator*=(float other) {
 	value_ = glm::vec3(value_.x * other, value_.y * other, value_.z * other);
 	return Vector3(value_);
