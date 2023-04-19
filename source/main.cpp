@@ -10,8 +10,8 @@
 #include "Math/Quaternion.h"
 #include <iostream>
 
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 720
 
 void main() {
 
@@ -48,24 +48,34 @@ void main() {
 		Vector3::Zero(),
 		Quaternion::Euler(-90.0f, 0.0f, 0.0f));
 
-	octane->AddComponent<Renderer>()->SetModel(octaneModel);
-	octane->GetComponent<Renderer>()->SetShader(halfToneShader);
+	Renderer* octaneRenderer = new Renderer(octane);
+	octaneRenderer->SetModel(octaneModel);
+	octaneRenderer->SetShader(halfToneShader);
+
+	octane->AddComponent(octaneRenderer);
+
 
 	Object* ball = new Object(scene,
-		Vector3(1.0f, 1.0f, 0.0f),
+		Vector3(1.0f, 5.0f, 0.0f),
 		Quaternion::Euler(90.0f, 45.0f, 90.0f),
 		Vector3::One() * 0.5f);
 
-	ball->AddComponent<Renderer>()->SetModel(ballModel);
-	ball->GetComponent<Renderer>()->SetShader(halfToneShader);
+	Renderer* ballRenderer = new Renderer(ball);
+	ballRenderer->SetModel(ballModel);
+	ballRenderer->SetShader(halfToneShader);
+
+	ball->AddComponent(ballRenderer);
 
 
 	Object* pitch = new Object(scene,
 		Vector3(0.0f, -1.0f, 0.0f),
 		Quaternion::Euler(-90.0f, 0.0f, 0.0f));
 
-	pitch->AddComponent<Renderer>()->SetModel(pitchModel);
-	pitch->GetComponent<Renderer>()->SetShader(halfToneShader);
+	Renderer* pitchRenderer = new Renderer(pitch);
+	pitchRenderer->SetModel(pitchModel);
+	pitchRenderer->SetShader(halfToneShader);
+
+	pitch->AddComponent(pitchRenderer);
 
 
 	// create lights

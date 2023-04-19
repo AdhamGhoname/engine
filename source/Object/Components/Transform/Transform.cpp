@@ -344,3 +344,11 @@ void Transform::Translate(Vector3 delta) {
 void Transform::TranslateLocal(Vector3 delta) {
 	SetLocalPosition(localPosition_ + delta);
 }
+
+std::type_index Transform::GetType() {
+	return typeid(Transform);
+}
+
+std::type_index Transform::Type() {
+	return typeid(Transform);
+}

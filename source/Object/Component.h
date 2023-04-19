@@ -1,6 +1,9 @@
 #pragma once
 #include "ObjectCommons.h"
 #include <string>
+#include <vector>
+#include <typeindex>
+#include <typeinfo>
 
 
 class Component {
@@ -9,39 +12,13 @@ protected:
 public:
     Component(Object* object);
     std::string GetName();
-    template <typename T>
-    T* GetComponent() {
-        return object_->GetComponent<T>();
-    }
-
-    template <typename T>
-    T* GetComponentInChildren() {
-        return object_->GetComponentInChildren<T>();
-    }
-
-    template <typename T>
-    T* GetComponentInParent() {
-        return object_->GetComponentInParent<T>();
-    }
-
-    template <typename T>
-    T* GetComponents() {
-        return object_->GetComponents<T>();
-    }
-
-    template <typename T>
-    T* GetComponentsInChildren() {
-        return object_->GetComponentsInChildren<T>();
-    }
-
-    template <typename T>
-    T* GetComponentsInParent() {
-        return object_->GetComponentsInParent<T>();
-    }
-
-    template <typename T>
-    void Destroy(Component* c) {
-        c->object_->RemoveComponent<T>(c);
-    }
-
+    virtual std::type_index GetType() = 0;
+    Component* GetComponent(std::type_index componentType);
+    Component* GetComponentInChildren(std::type_index componentType);
+    Component* GetComponentInParent(std::type_index componentType);
+    std::vector<Component*> GetComponents(std::type_index componentType);
+    std::vector<Component*> GetComponentsInChildren(std::type_index componentType);
+    std::vector<Component*> GetComponentsInParent(std::type_index componentType);
+    void Destroy(Component* c);
+    static std::type_index Type();
 };

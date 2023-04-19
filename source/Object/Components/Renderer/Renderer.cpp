@@ -64,3 +64,11 @@ Shader* Renderer::GetShader() {
 void Renderer::SetShader(Shader* shader) {
 	shader_ = shader;
 }
+
+std::type_index Renderer::GetType() {
+	return typeid(Renderer);
+}
+
+std::type_index Renderer::Type() {
+	return typeid(Renderer);
+}

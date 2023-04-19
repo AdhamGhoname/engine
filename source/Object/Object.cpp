@@ -83,6 +83,79 @@ void Object::SetName(std::string name) {
     name_ = name;
 }
 
+Component* Object::AddComponent(Component* component) {
+    components_[component->GetType()].push_back(component);
+    return component;
+}
+
+void Object::RemoveComponent(std::type_index componentType) {
+    components_[componentType].clear();
+}
+
+void Object::RemoveComponent(Component* c) {
+    auto it = std::find(components_[c->GetType()].begin(), components_[c->GetType()].end(), c);
+    if (it == components_[c->GetType()].end())
+        return;
+    components_[c->GetType()].erase(it);
+}
+
+Component* Object::GetComponent(std::type_index componentType) {
+    return components_[componentType].empty() ? NULL : (Component*)components_[componentType][0];
+}
+
+Component* Object::GetComponentInChildren(std::type_index componentType) {
+
+    Component* comp = this->GetComponent(componentType);
+    if (comp != NULL) {
+        return comp;
+    }
+
+    for (int i = 0; i < transform_->GetChildCount(); i++) {
+        Transform* t = transform_->GetChild(i);
+        Component* result = t->GetComponentInChildren(componentType);
+        if (result != NULL) {
+            return result;
+        }
+    }
+    return NULL;
+}
+
+Component* Object::GetComponentInParent(std::type_index componentType) {
+
+    Component* comp = this->GetComponent(componentType);
+    if (comp != NULL) {
+        return comp;
+    }
+
+    if (transform_->HasParent()) {
+        comp = transform_->GetParent()->GetComponentInParent(componentType);
+    }
+    return comp;
+}
+
+std::vector<Component*> Object::GetComponents(std::type_index componentType) {
+    return std::vector(components_[componentType].begin(), components_[componentType].end());
+}
+
+std::vector<Component*> Object::GetComponentsInChildren(std::type_index componentType) {
+    std::vector result(components_[componentType].begin(), components_[componentType].end());
+    for (int i = 0; i < transform_->GetChildCount(); i++) {
+        std::vector<Component*> comps = transform_->GetChild(i)->GetComponentsInChildren(componentType);
+        result.insert(result.end(), comps.begin(), comps.end());
+    }
+    return result;
+}
+
+std::vector<Component*> Object::GetComponentsInParent(std::type_index componentType) {
+    std::vector<Component*> result = this->GetComponents(componentType);
+    if (transform_->HasParent()) {
+        std::vector<Component*> comps = transform_->GetParent()->GetComponentsInParent(componentType);
+        result.insert(result.end(), comps.begin(), comps.end());
+    }
+    return result;
+}
+
+
 void Object::DestoryRecursive(Object* object) {
     for (int i = 0; i < object->GetTransform()->GetChildCount(); i++) {
         DestoryRecursive(object->GetTransform()->GetChild(i)->GetObject());

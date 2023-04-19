@@ -93,7 +93,7 @@ int Scene::Prerender(Shader* currentShader) {
 }
 
 void Scene::RenderRecursive(Transform* node) {
-    Renderer* renderer = node->GetObject()->GetComponent<Renderer>();
+    Renderer* renderer = (Renderer*)node->GetObject()->GetComponent(Renderer::Type());
     if (renderer != NULL) {
         renderer->Render();
     }

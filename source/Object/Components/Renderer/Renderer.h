@@ -24,4 +24,7 @@ public:
 	void SetModel(Model* model);
 	Shader* GetShader();
 	void SetShader(Shader* shader);
+
+	std::type_index GetType();
+	static std::type_index Type();
 };

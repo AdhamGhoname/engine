@@ -94,4 +94,8 @@ public:
     void SetSiblingIndex(unsigned int index);
     void Translate(Vector3 delta);
     void TranslateLocal(Vector3 delta);
+
+    //inherited
+    std::type_index GetType();
+    static std::type_index Type();
 };
