@@ -45,7 +45,8 @@ file(GLOB_RECURSE SOURCES_AND_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/source/*.h
                                         ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
 
 file(GLOB_RECURSE SHADERS ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.frag
-                          ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.vert)
+                          ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.vert
+                          ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/*.glsl)
 
 add_executable(engine ${SOURCES_AND_INCLUDES} ${SHADERS})
 
